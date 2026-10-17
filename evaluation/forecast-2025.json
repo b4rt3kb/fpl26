@@ -1,0 +1,1553 @@
+{
+  "season": "2025-26",
+  "horizon": 6,
+  "origins": [
+    {
+      "origin": 1,
+      "trained_origin": 1,
+      "cutoff": "2025-08-15T19:00:00+00:00",
+      "training_rows": 57008,
+      "minutes_training_rows": 101828,
+      "players": 690,
+      "minutes_fit": {
+        "base_rows": 96376,
+        "calibration_rows": 3908,
+        "purged_overlap_rows": 1544,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-05-02T19:00:00+00:00",
+        "base_latest_completion": "2025-05-01T20:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          57403,
+          12255,
+          26718
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.49518793137610784,
+        "raw_brier": 0.278741437744778,
+        "calibrated_log_loss": 0.49428854393228794,
+        "calibrated_brier": 0.27836214575820595,
+        "calibration_minutes_mae": 13.94832609376415
+      }
+    },
+    {
+      "origin": 2,
+      "trained_origin": 1,
+      "cutoff": "2025-08-22T19:00:00+00:00",
+      "training_rows": 57008,
+      "minutes_training_rows": 101828,
+      "players": 705,
+      "minutes_fit": {
+        "base_rows": 96376,
+        "calibration_rows": 3908,
+        "purged_overlap_rows": 1544,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-05-02T19:00:00+00:00",
+        "base_latest_completion": "2025-05-01T20:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          57403,
+          12255,
+          26718
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.49518793137610784,
+        "raw_brier": 0.278741437744778,
+        "calibrated_log_loss": 0.49428854393228794,
+        "calibrated_brier": 0.27836214575820595,
+        "calibration_minutes_mae": 13.94832609376415
+      }
+    },
+    {
+      "origin": 3,
+      "trained_origin": 1,
+      "cutoff": "2025-08-30T11:30:00+00:00",
+      "training_rows": 57008,
+      "minutes_training_rows": 101828,
+      "players": 712,
+      "minutes_fit": {
+        "base_rows": 96376,
+        "calibration_rows": 3908,
+        "purged_overlap_rows": 1544,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-05-02T19:00:00+00:00",
+        "base_latest_completion": "2025-05-01T20:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          57403,
+          12255,
+          26718
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.49518793137610784,
+        "raw_brier": 0.278741437744778,
+        "calibrated_log_loss": 0.49428854393228794,
+        "calibrated_brier": 0.27836214575820595,
+        "calibration_minutes_mae": 13.94832609376415
+      }
+    },
+    {
+      "origin": 4,
+      "trained_origin": 1,
+      "cutoff": "2025-09-13T11:30:00+00:00",
+      "training_rows": 57008,
+      "minutes_training_rows": 101828,
+      "players": 740,
+      "minutes_fit": {
+        "base_rows": 96376,
+        "calibration_rows": 3908,
+        "purged_overlap_rows": 1544,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-05-02T19:00:00+00:00",
+        "base_latest_completion": "2025-05-01T20:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          57403,
+          12255,
+          26718
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.49518793137610784,
+        "raw_brier": 0.278741437744778,
+        "calibrated_log_loss": 0.49428854393228794,
+        "calibrated_brier": 0.27836214575820595,
+        "calibration_minutes_mae": 13.94832609376415
+      }
+    },
+    {
+      "origin": 5,
+      "trained_origin": 5,
+      "cutoff": "2025-09-20T11:30:00+00:00",
+      "training_rows": 59855,
+      "minutes_training_rows": 104675,
+      "players": 741,
+      "minutes_fit": {
+        "base_rows": 101828,
+        "calibration_rows": 2847,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-08-15T19:00:00+00:00",
+        "base_latest_completion": "2025-05-25T17:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          60708,
+          12968,
+          28152
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.5699943650804254,
+        "raw_brier": 0.3214390701282806,
+        "calibrated_log_loss": 0.5678053172840754,
+        "calibrated_brier": 0.3200649261401182,
+        "calibration_minutes_mae": 16.206325941283726
+      }
+    },
+    {
+      "origin": 6,
+      "trained_origin": 5,
+      "cutoff": "2025-09-27T11:30:00+00:00",
+      "training_rows": 59855,
+      "minutes_training_rows": 104675,
+      "players": 742,
+      "minutes_fit": {
+        "base_rows": 101828,
+        "calibration_rows": 2847,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-08-15T19:00:00+00:00",
+        "base_latest_completion": "2025-05-25T17:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          60708,
+          12968,
+          28152
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.5699943650804254,
+        "raw_brier": 0.3214390701282806,
+        "calibrated_log_loss": 0.5678053172840754,
+        "calibrated_brier": 0.3200649261401182,
+        "calibration_minutes_mae": 16.206325941283726
+      }
+    },
+    {
+      "origin": 7,
+      "trained_origin": 5,
+      "cutoff": "2025-10-03T19:00:00+00:00",
+      "training_rows": 59855,
+      "minutes_training_rows": 104675,
+      "players": 743,
+      "minutes_fit": {
+        "base_rows": 101828,
+        "calibration_rows": 2847,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-08-15T19:00:00+00:00",
+        "base_latest_completion": "2025-05-25T17:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          60708,
+          12968,
+          28152
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.5699943650804254,
+        "raw_brier": 0.3214390701282806,
+        "calibrated_log_loss": 0.5678053172840754,
+        "calibrated_brier": 0.3200649261401182,
+        "calibration_minutes_mae": 16.206325941283726
+      }
+    },
+    {
+      "origin": 8,
+      "trained_origin": 5,
+      "cutoff": "2025-10-18T11:30:00+00:00",
+      "training_rows": 59855,
+      "minutes_training_rows": 104675,
+      "players": 745,
+      "minutes_fit": {
+        "base_rows": 101828,
+        "calibration_rows": 2847,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-08-15T19:00:00+00:00",
+        "base_latest_completion": "2025-05-25T17:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          60708,
+          12968,
+          28152
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.5699943650804254,
+        "raw_brier": 0.3214390701282806,
+        "calibrated_log_loss": 0.5678053172840754,
+        "calibrated_brier": 0.3200649261401182,
+        "calibration_minutes_mae": 16.206325941283726
+      }
+    },
+    {
+      "origin": 9,
+      "trained_origin": 9,
+      "cutoff": "2025-10-24T19:00:00+00:00",
+      "training_rows": 62826,
+      "minutes_training_rows": 107646,
+      "players": 746,
+      "minutes_fit": {
+        "base_rows": 104675,
+        "calibration_rows": 2971,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-09-20T11:30:00+00:00",
+        "base_latest_completion": "2025-09-14T17:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          62337,
+          13358,
+          28980
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4622160402424148,
+        "raw_brier": 0.2567201825367723,
+        "calibrated_log_loss": 0.45960768506862,
+        "calibrated_brier": 0.2556368705559453,
+        "calibration_minutes_mae": 12.16139725250198
+      }
+    },
+    {
+      "origin": 10,
+      "trained_origin": 9,
+      "cutoff": "2025-11-01T15:00:00+00:00",
+      "training_rows": 62826,
+      "minutes_training_rows": 107646,
+      "players": 747,
+      "minutes_fit": {
+        "base_rows": 104675,
+        "calibration_rows": 2971,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-09-20T11:30:00+00:00",
+        "base_latest_completion": "2025-09-14T17:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          62337,
+          13358,
+          28980
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4622160402424148,
+        "raw_brier": 0.2567201825367723,
+        "calibrated_log_loss": 0.45960768506862,
+        "calibrated_brier": 0.2556368705559453,
+        "calibration_minutes_mae": 12.16139725250198
+      }
+    },
+    {
+      "origin": 11,
+      "trained_origin": 9,
+      "cutoff": "2025-11-08T12:30:00+00:00",
+      "training_rows": 62826,
+      "minutes_training_rows": 107646,
+      "players": 752,
+      "minutes_fit": {
+        "base_rows": 104675,
+        "calibration_rows": 2971,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-09-20T11:30:00+00:00",
+        "base_latest_completion": "2025-09-14T17:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          62337,
+          13358,
+          28980
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4622160402424148,
+        "raw_brier": 0.2567201825367723,
+        "calibrated_log_loss": 0.45960768506862,
+        "calibrated_brier": 0.2556368705559453,
+        "calibration_minutes_mae": 12.16139725250198
+      }
+    },
+    {
+      "origin": 12,
+      "trained_origin": 9,
+      "cutoff": "2025-11-22T12:30:00+00:00",
+      "training_rows": 62826,
+      "minutes_training_rows": 107646,
+      "players": 755,
+      "minutes_fit": {
+        "base_rows": 104675,
+        "calibration_rows": 2971,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-09-20T11:30:00+00:00",
+        "base_latest_completion": "2025-09-14T17:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          62337,
+          13358,
+          28980
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4622160402424148,
+        "raw_brier": 0.2567201825367723,
+        "calibrated_log_loss": 0.45960768506862,
+        "calibrated_brier": 0.2556368705559453,
+        "calibration_minutes_mae": 12.16139725250198
+      }
+    },
+    {
+      "origin": 13,
+      "trained_origin": 13,
+      "cutoff": "2025-11-29T15:00:00+00:00",
+      "training_rows": 65826,
+      "minutes_training_rows": 110646,
+      "players": 755,
+      "minutes_fit": {
+        "base_rows": 107646,
+        "calibration_rows": 3000,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-10-24T19:00:00+00:00",
+        "base_latest_completion": "2025-10-20T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          64076,
+          13779,
+          29791
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.41855731425493875,
+        "raw_brier": 0.23232947380732974,
+        "calibrated_log_loss": 0.4130572777832314,
+        "calibrated_brier": 0.23150998627477512,
+        "calibration_minutes_mae": 10.626846776012533
+      }
+    },
+    {
+      "origin": 14,
+      "trained_origin": 13,
+      "cutoff": "2025-12-02T19:30:00+00:00",
+      "training_rows": 65826,
+      "minutes_training_rows": 110646,
+      "players": 758,
+      "minutes_fit": {
+        "base_rows": 107646,
+        "calibration_rows": 3000,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-10-24T19:00:00+00:00",
+        "base_latest_completion": "2025-10-20T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          64076,
+          13779,
+          29791
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.41855731425493875,
+        "raw_brier": 0.23232947380732974,
+        "calibrated_log_loss": 0.4130572777832314,
+        "calibrated_brier": 0.23150998627477512,
+        "calibration_minutes_mae": 10.626846776012533
+      }
+    },
+    {
+      "origin": 15,
+      "trained_origin": 13,
+      "cutoff": "2025-12-06T12:30:00+00:00",
+      "training_rows": 65826,
+      "minutes_training_rows": 110646,
+      "players": 759,
+      "minutes_fit": {
+        "base_rows": 107646,
+        "calibration_rows": 3000,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-10-24T19:00:00+00:00",
+        "base_latest_completion": "2025-10-20T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          64076,
+          13779,
+          29791
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.41855731425493875,
+        "raw_brier": 0.23232947380732974,
+        "calibrated_log_loss": 0.4130572777832314,
+        "calibrated_brier": 0.23150998627477512,
+        "calibration_minutes_mae": 10.626846776012533
+      }
+    },
+    {
+      "origin": 16,
+      "trained_origin": 13,
+      "cutoff": "2025-12-13T15:00:00+00:00",
+      "training_rows": 65826,
+      "minutes_training_rows": 110646,
+      "players": 760,
+      "minutes_fit": {
+        "base_rows": 107646,
+        "calibration_rows": 3000,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-10-24T19:00:00+00:00",
+        "base_latest_completion": "2025-10-20T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          64076,
+          13779,
+          29791
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.41855731425493875,
+        "raw_brier": 0.23232947380732974,
+        "calibrated_log_loss": 0.4130572777832314,
+        "calibrated_brier": 0.23150998627477512,
+        "calibration_minutes_mae": 10.626846776012533
+      }
+    },
+    {
+      "origin": 17,
+      "trained_origin": 17,
+      "cutoff": "2025-12-20T12:30:00+00:00",
+      "training_rows": 68858,
+      "minutes_training_rows": 113678,
+      "players": 770,
+      "minutes_fit": {
+        "base_rows": 110646,
+        "calibration_rows": 3032,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-11-29T15:00:00+00:00",
+        "base_latest_completion": "2025-11-24T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          65853,
+          14178,
+          30615
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.44860439789027196,
+        "raw_brier": 0.25137046694673787,
+        "calibrated_log_loss": 0.44797403638129635,
+        "calibrated_brier": 0.2513303484602301,
+        "calibration_minutes_mae": 12.408792077486723
+      }
+    },
+    {
+      "origin": 18,
+      "trained_origin": 17,
+      "cutoff": "2025-12-26T20:00:00+00:00",
+      "training_rows": 68858,
+      "minutes_training_rows": 113678,
+      "players": 775,
+      "minutes_fit": {
+        "base_rows": 110646,
+        "calibration_rows": 3032,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-11-29T15:00:00+00:00",
+        "base_latest_completion": "2025-11-24T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          65853,
+          14178,
+          30615
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.44860439789027196,
+        "raw_brier": 0.25137046694673787,
+        "calibrated_log_loss": 0.44797403638129635,
+        "calibrated_brier": 0.2513303484602301,
+        "calibration_minutes_mae": 12.408792077486723
+      }
+    },
+    {
+      "origin": 19,
+      "trained_origin": 17,
+      "cutoff": "2025-12-30T19:30:00+00:00",
+      "training_rows": 68858,
+      "minutes_training_rows": 113678,
+      "players": 780,
+      "minutes_fit": {
+        "base_rows": 110646,
+        "calibration_rows": 3032,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-11-29T15:00:00+00:00",
+        "base_latest_completion": "2025-11-24T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          65853,
+          14178,
+          30615
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.44860439789027196,
+        "raw_brier": 0.25137046694673787,
+        "calibrated_log_loss": 0.44797403638129635,
+        "calibrated_brier": 0.2513303484602301,
+        "calibration_minutes_mae": 12.408792077486723
+      }
+    },
+    {
+      "origin": 20,
+      "trained_origin": 17,
+      "cutoff": "2026-01-03T12:30:00+00:00",
+      "training_rows": 68858,
+      "minutes_training_rows": 113678,
+      "players": 790,
+      "minutes_fit": {
+        "base_rows": 110646,
+        "calibration_rows": 3032,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-11-29T15:00:00+00:00",
+        "base_latest_completion": "2025-11-24T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          65853,
+          14178,
+          30615
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.44860439789027196,
+        "raw_brier": 0.25137046694673787,
+        "calibrated_log_loss": 0.44797403638129635,
+        "calibrated_brier": 0.2513303484602301,
+        "calibration_minutes_mae": 12.408792077486723
+      }
+    },
+    {
+      "origin": 21,
+      "trained_origin": 21,
+      "cutoff": "2026-01-06T20:00:00+00:00",
+      "training_rows": 71973,
+      "minutes_training_rows": 116793,
+      "players": 795,
+      "minutes_fit": {
+        "base_rows": 113678,
+        "calibration_rows": 3115,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-12-20T12:30:00+00:00",
+        "base_latest_completion": "2025-12-15T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          67665,
+          14577,
+          31436
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.46058093513887355,
+        "raw_brier": 0.25477054667626003,
+        "calibrated_log_loss": 0.45996485706302925,
+        "calibrated_brier": 0.25442846155668614,
+        "calibration_minutes_mae": 13.054974187862776
+      }
+    },
+    {
+      "origin": 22,
+      "trained_origin": 21,
+      "cutoff": "2026-01-17T12:30:00+00:00",
+      "training_rows": 71973,
+      "minutes_training_rows": 116793,
+      "players": 799,
+      "minutes_fit": {
+        "base_rows": 113678,
+        "calibration_rows": 3115,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-12-20T12:30:00+00:00",
+        "base_latest_completion": "2025-12-15T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          67665,
+          14577,
+          31436
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.46058093513887355,
+        "raw_brier": 0.25477054667626003,
+        "calibrated_log_loss": 0.45996485706302925,
+        "calibrated_brier": 0.25442846155668614,
+        "calibration_minutes_mae": 13.054974187862776
+      }
+    },
+    {
+      "origin": 23,
+      "trained_origin": 21,
+      "cutoff": "2026-01-24T12:30:00+00:00",
+      "training_rows": 71973,
+      "minutes_training_rows": 116793,
+      "players": 803,
+      "minutes_fit": {
+        "base_rows": 113678,
+        "calibration_rows": 3115,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-12-20T12:30:00+00:00",
+        "base_latest_completion": "2025-12-15T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          67665,
+          14577,
+          31436
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.46058093513887355,
+        "raw_brier": 0.25477054667626003,
+        "calibrated_log_loss": 0.45996485706302925,
+        "calibrated_brier": 0.25442846155668614,
+        "calibration_minutes_mae": 13.054974187862776
+      }
+    },
+    {
+      "origin": 24,
+      "trained_origin": 21,
+      "cutoff": "2026-01-31T15:00:00+00:00",
+      "training_rows": 71973,
+      "minutes_training_rows": 116793,
+      "players": 811,
+      "minutes_fit": {
+        "base_rows": 113678,
+        "calibration_rows": 3115,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2025-12-20T12:30:00+00:00",
+        "base_latest_completion": "2025-12-15T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          67665,
+          14577,
+          31436
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.46058093513887355,
+        "raw_brier": 0.25477054667626003,
+        "calibrated_log_loss": 0.45996485706302925,
+        "calibrated_brier": 0.25442846155668614,
+        "calibration_minutes_mae": 13.054974187862776
+      }
+    },
+    {
+      "origin": 25,
+      "trained_origin": 25,
+      "cutoff": "2026-02-06T20:00:00+00:00",
+      "training_rows": 75181,
+      "minutes_training_rows": 120001,
+      "players": 817,
+      "minutes_fit": {
+        "base_rows": 116793,
+        "calibration_rows": 3208,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-01-06T20:00:00+00:00",
+        "base_latest_completion": "2026-01-04T19:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          69593,
+          14931,
+          32269
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4443565978215685,
+        "raw_brier": 0.24665767361523966,
+        "calibrated_log_loss": 0.44413343279421186,
+        "calibrated_brier": 0.24663070003227014,
+        "calibration_minutes_mae": 12.266013645676388
+      }
+    },
+    {
+      "origin": 26,
+      "trained_origin": 25,
+      "cutoff": "2026-02-10T19:30:00+00:00",
+      "training_rows": 75181,
+      "minutes_training_rows": 120001,
+      "players": 817,
+      "minutes_fit": {
+        "base_rows": 116793,
+        "calibration_rows": 3208,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-01-06T20:00:00+00:00",
+        "base_latest_completion": "2026-01-04T19:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          69593,
+          14931,
+          32269
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4443565978215685,
+        "raw_brier": 0.24665767361523966,
+        "calibrated_log_loss": 0.44413343279421186,
+        "calibrated_brier": 0.24663070003227014,
+        "calibration_minutes_mae": 12.266013645676388
+      }
+    },
+    {
+      "origin": 27,
+      "trained_origin": 25,
+      "cutoff": "2026-02-21T15:00:00+00:00",
+      "training_rows": 75181,
+      "minutes_training_rows": 120001,
+      "players": 818,
+      "minutes_fit": {
+        "base_rows": 116793,
+        "calibration_rows": 3208,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-01-06T20:00:00+00:00",
+        "base_latest_completion": "2026-01-04T19:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          69593,
+          14931,
+          32269
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4443565978215685,
+        "raw_brier": 0.24665767361523966,
+        "calibrated_log_loss": 0.44413343279421186,
+        "calibrated_brier": 0.24663070003227014,
+        "calibration_minutes_mae": 12.266013645676388
+      }
+    },
+    {
+      "origin": 28,
+      "trained_origin": 25,
+      "cutoff": "2026-02-27T20:00:00+00:00",
+      "training_rows": 75181,
+      "minutes_training_rows": 120001,
+      "players": 819,
+      "minutes_fit": {
+        "base_rows": 116793,
+        "calibration_rows": 3208,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-01-06T20:00:00+00:00",
+        "base_latest_completion": "2026-01-04T19:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          69593,
+          14931,
+          32269
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4443565978215685,
+        "raw_brier": 0.24665767361523966,
+        "calibrated_log_loss": 0.44413343279421186,
+        "calibrated_brier": 0.24663070003227014,
+        "calibration_minutes_mae": 12.266013645676388
+      }
+    },
+    {
+      "origin": 29,
+      "trained_origin": 29,
+      "cutoff": "2026-03-03T19:30:00+00:00",
+      "training_rows": 78531,
+      "minutes_training_rows": 123351,
+      "players": 820,
+      "minutes_fit": {
+        "base_rows": 120001,
+        "calibration_rows": 3350,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-02-06T20:00:00+00:00",
+        "base_latest_completion": "2026-02-02T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          71610,
+          15301,
+          33090
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.407571330370155,
+        "raw_brier": 0.22435383006829204,
+        "calibrated_log_loss": 0.4050268676333201,
+        "calibrated_brier": 0.22313947715947005,
+        "calibration_minutes_mae": 10.973434184488
+      }
+    },
+    {
+      "origin": 30,
+      "trained_origin": 29,
+      "cutoff": "2026-03-14T15:00:00+00:00",
+      "training_rows": 78531,
+      "minutes_training_rows": 123351,
+      "players": 822,
+      "minutes_fit": {
+        "base_rows": 120001,
+        "calibration_rows": 3350,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-02-06T20:00:00+00:00",
+        "base_latest_completion": "2026-02-02T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          71610,
+          15301,
+          33090
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.407571330370155,
+        "raw_brier": 0.22435383006829204,
+        "calibrated_log_loss": 0.4050268676333201,
+        "calibrated_brier": 0.22313947715947005,
+        "calibration_minutes_mae": 10.973434184488
+      }
+    },
+    {
+      "origin": 31,
+      "trained_origin": 29,
+      "cutoff": "2026-03-20T20:00:00+00:00",
+      "training_rows": 78531,
+      "minutes_training_rows": 123351,
+      "players": 825,
+      "minutes_fit": {
+        "base_rows": 120001,
+        "calibration_rows": 3350,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-02-06T20:00:00+00:00",
+        "base_latest_completion": "2026-02-02T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          71610,
+          15301,
+          33090
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.407571330370155,
+        "raw_brier": 0.22435383006829204,
+        "calibrated_log_loss": 0.4050268676333201,
+        "calibrated_brier": 0.22313947715947005,
+        "calibration_minutes_mae": 10.973434184488
+      }
+    },
+    {
+      "origin": 32,
+      "trained_origin": 29,
+      "cutoff": "2026-04-10T19:00:00+00:00",
+      "training_rows": 78531,
+      "minutes_training_rows": 123351,
+      "players": 826,
+      "minutes_fit": {
+        "base_rows": 120001,
+        "calibration_rows": 3350,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-02-06T20:00:00+00:00",
+        "base_latest_completion": "2026-02-02T22:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          71610,
+          15301,
+          33090
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.407571330370155,
+        "raw_brier": 0.22435383006829204,
+        "calibrated_log_loss": 0.4050268676333201,
+        "calibrated_brier": 0.22313947715947005,
+        "calibration_minutes_mae": 10.973434184488
+      }
+    },
+    {
+      "origin": 33,
+      "trained_origin": 33,
+      "cutoff": "2026-04-18T11:30:00+00:00",
+      "training_rows": 81663,
+      "minutes_training_rows": 126483,
+      "players": 829,
+      "minutes_fit": {
+        "base_rows": 123351,
+        "calibration_rows": 3132,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-03-03T19:30:00+00:00",
+        "base_latest_completion": "2026-03-01T18:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          73731,
+          15694,
+          33926
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4333793503702925,
+        "raw_brier": 0.24346808776997333,
+        "calibrated_log_loss": 0.4333371288918383,
+        "calibrated_brier": 0.24347258278544723,
+        "calibration_minutes_mae": 12.376188938011868
+      }
+    },
+    {
+      "origin": 34,
+      "trained_origin": 33,
+      "cutoff": "2026-04-24T19:00:00+00:00",
+      "training_rows": 81663,
+      "minutes_training_rows": 126483,
+      "players": 830,
+      "minutes_fit": {
+        "base_rows": 123351,
+        "calibration_rows": 3132,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-03-03T19:30:00+00:00",
+        "base_latest_completion": "2026-03-01T18:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          73731,
+          15694,
+          33926
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4333793503702925,
+        "raw_brier": 0.24346808776997333,
+        "calibrated_log_loss": 0.4333371288918383,
+        "calibrated_brier": 0.24347258278544723,
+        "calibration_minutes_mae": 12.376188938011868
+      }
+    },
+    {
+      "origin": 35,
+      "trained_origin": 33,
+      "cutoff": "2026-05-01T19:00:00+00:00",
+      "training_rows": 81663,
+      "minutes_training_rows": 126483,
+      "players": 832,
+      "minutes_fit": {
+        "base_rows": 123351,
+        "calibration_rows": 3132,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-03-03T19:30:00+00:00",
+        "base_latest_completion": "2026-03-01T18:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          73731,
+          15694,
+          33926
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4333793503702925,
+        "raw_brier": 0.24346808776997333,
+        "calibrated_log_loss": 0.4333371288918383,
+        "calibrated_brier": 0.24347258278544723,
+        "calibration_minutes_mae": 12.376188938011868
+      }
+    },
+    {
+      "origin": 36,
+      "trained_origin": 33,
+      "cutoff": "2026-05-09T11:30:00+00:00",
+      "training_rows": 81663,
+      "minutes_training_rows": 126483,
+      "players": 838,
+      "minutes_fit": {
+        "base_rows": 123351,
+        "calibration_rows": 3132,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-03-03T19:30:00+00:00",
+        "base_latest_completion": "2026-03-01T18:30:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          73731,
+          15694,
+          33926
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4333793503702925,
+        "raw_brier": 0.24346808776997333,
+        "calibrated_log_loss": 0.4333371288918383,
+        "calibrated_brier": 0.24347258278544723,
+        "calibration_minutes_mae": 12.376188938011868
+      }
+    },
+    {
+      "origin": 37,
+      "trained_origin": 37,
+      "cutoff": "2026-05-15T19:00:00+00:00",
+      "training_rows": 85074,
+      "minutes_training_rows": 129894,
+      "players": 840,
+      "minutes_fit": {
+        "base_rows": 126483,
+        "calibration_rows": 3411,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-04-18T11:30:00+00:00",
+        "base_latest_completion": "2026-04-13T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          75715,
+          16054,
+          34714
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.42613656809928513,
+        "raw_brier": 0.2376459717423987,
+        "calibrated_log_loss": 0.42607183691827033,
+        "calibrated_brier": 0.23764635413012866,
+        "calibration_minutes_mae": 11.880408196956033
+      }
+    },
+    {
+      "origin": 38,
+      "trained_origin": 37,
+      "cutoff": "2026-05-24T15:00:00+00:00",
+      "training_rows": 85074,
+      "minutes_training_rows": 129894,
+      "players": 841,
+      "minutes_fit": {
+        "base_rows": 126483,
+        "calibration_rows": 3411,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-04-18T11:30:00+00:00",
+        "base_latest_completion": "2026-04-13T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          51.354166666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          75715,
+          16054,
+          34714
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.42613656809928513,
+        "raw_brier": 0.2376459717423987,
+        "calibrated_log_loss": 0.42607183691827033,
+        "calibrated_brier": 0.23764635413012866,
+        "calibration_minutes_mae": 11.880408196956033
+      }
+    }
+  ],
+  "metrics": {
+    "hgb": {
+      "all": {
+        "n": 29747,
+        "mae": 0.9969694939736781,
+        "rmse": 1.9487508680123409,
+        "bias": -0.007712242795620938,
+        "spearman_per_gw": 0.7075851685885745,
+        "top20_actual_mean": 4.298684210526315,
+        "captain_raw_points": 240.0
+      },
+      "active_prior": {
+        "n": 8295,
+        "mae": 2.2720922068782574,
+        "rmse": 3.0583312015235897,
+        "bias": -0.021654316324982294,
+        "spearman_per_gw": 0.300285105085639,
+        "top20_actual_mean": 4.3355263157894735,
+        "captain_raw_points": 240.0
+      },
+      "frozen_horizon_active": {
+        "n": 46519,
+        "mae": 2.329184074401954,
+        "rmse": 3.0785267426246365,
+        "bias": 0.17543788856384496,
+        "spearman_per_gw": 0.2575062127145062,
+        "top20_actual_mean": 4.127230046948356,
+        "captain_raw_points": 1159.0
+      }
+    },
+    "minutes_model": {
+      "all": {
+        "n": 29747,
+        "mae": 0.976189710396175,
+        "rmse": 1.9323177215172516,
+        "bias": 0.005623048356910394,
+        "spearman_per_gw": 0.718030121691384,
+        "top20_actual_mean": 4.360526315789475,
+        "captain_raw_points": 207.0
+      },
+      "active_prior": {
+        "n": 8295,
+        "mae": 2.2605602571354044,
+        "rmse": 3.045043128060491,
+        "bias": 0.03793860595974635,
+        "spearman_per_gw": 0.33164400919811404,
+        "top20_actual_mean": 4.378947368421054,
+        "captain_raw_points": 202.0
+      },
+      "frozen_horizon_active": {
+        "n": 46519,
+        "mae": 2.281612251883755,
+        "rmse": 3.0698368313007895,
+        "bias": 0.08100781054378114,
+        "spearman_per_gw": 0.268145680074117,
+        "top20_actual_mean": 4.091549295774648,
+        "captain_raw_points": 1160.0
+      }
+    },
+    "ensemble": {
+      "all": {
+        "n": 29747,
+        "mae": 0.9813160237164694,
+        "rmse": 1.9303886737269313,
+        "bias": -0.0010445972193552707,
+        "spearman_per_gw": 0.7162451703867505,
+        "top20_actual_mean": 4.385526315789474,
+        "captain_raw_points": 226.0
+      },
+      "active_prior": {
+        "n": 8295,
+        "mae": 2.2575616405807795,
+        "rmse": 3.0365125390196748,
+        "bias": 0.008142144817382058,
+        "spearman_per_gw": 0.3302006811630838,
+        "top20_actual_mean": 4.403947368421052,
+        "captain_raw_points": 226.0
+      },
+      "frozen_horizon_active": {
+        "n": 46519,
+        "mae": 2.2980373840002066,
+        "rmse": 3.0599714949673382,
+        "bias": 0.12822284955381305,
+        "spearman_per_gw": 0.27293383671292976,
+        "top20_actual_mean": 4.138732394366197,
+        "captain_raw_points": 1208.0
+      }
+    },
+    "rolling10": {
+      "all": {
+        "n": 29747,
+        "mae": 1.049847684422113,
+        "rmse": 2.080008221625926,
+        "bias": 0.020132088465693088,
+        "spearman_per_gw": 0.7010766993442888,
+        "top20_actual_mean": 3.996052631578948,
+        "captain_raw_points": 253.0
+      },
+      "active_prior": {
+        "n": 8295,
+        "mae": 2.4404485394720474,
+        "rmse": 3.2588433866960753,
+        "bias": 0.21717209942678678,
+        "spearman_per_gw": 0.2193460573650497,
+        "top20_actual_mean": 4.061842105263159,
+        "captain_raw_points": 253.0
+      },
+      "frozen_horizon_active": {
+        "n": 46519,
+        "mae": 2.478621180522837,
+        "rmse": 3.265352627178203,
+        "bias": 0.421623709129154,
+        "spearman_per_gw": 0.2086359468084038,
+        "top20_actual_mean": 3.857276995305164,
+        "captain_raw_points": 1230.0
+      }
+    }
+  },
+  "minutes": {
+    "next_gw": {
+      "n": 29747,
+      "minutes_mae": 12.523945937064786,
+      "baseline_minutes_mae": 12.80677579752993,
+      "multiclass_brier": 0.25211756876484814,
+      "appearance_brier": 0.08577025613456392,
+      "baseline_appearance_brier": 0.10591005612397393,
+      "p60_brier": 0.08079668726192415,
+      "baseline_p60_brier": 0.10231562644853039
+    },
+    "next_gw_active_prior": {
+      "n": 8291,
+      "minutes_mae": 22.131427606993284,
+      "baseline_minutes_mae": 22.21660297469037,
+      "multiclass_brier": 0.3574314846218714,
+      "appearance_brier": 0.09644797597072749,
+      "baseline_appearance_brier": 0.11809353365883547,
+      "p60_brier": 0.15459848970465795,
+      "baseline_p60_brier": 0.1933572118744467
+    },
+    "by_lead": {
+      "1": {
+        "n": 29747,
+        "minutes_mae": 12.523945937064786,
+        "baseline_minutes_mae": 12.80677579752993,
+        "multiclass_brier": 0.25211756876484814,
+        "appearance_brier": 0.08577025613456392,
+        "baseline_appearance_brier": 0.10591005612397393,
+        "p60_brier": 0.08079668726192415,
+        "baseline_p60_brier": 0.10231562644853039
+      },
+      "2": {
+        "n": 28877,
+        "minutes_mae": 15.108504172132866,
+        "baseline_minutes_mae": 14.277785209986217,
+        "multiclass_brier": 0.28809794833298324,
+        "appearance_brier": 0.10131465383851283,
+        "baseline_appearance_brier": 0.12174722346047953,
+        "p60_brier": 0.09755751899189273,
+        "baseline_p60_brier": 0.11884493526390365
+      },
+      "3": {
+        "n": 28015,
+        "minutes_mae": 16.471081379715052,
+        "baseline_minutes_mae": 15.29283087694249,
+        "multiclass_brier": 0.3090886785297684,
+        "appearance_brier": 0.11142894585011395,
+        "baseline_appearance_brier": 0.13380633278230505,
+        "p60_brier": 0.10712700292011283,
+        "baseline_p60_brier": 0.12982645901141832
+      },
+      "4": {
+        "n": 27155,
+        "minutes_mae": 17.399146770951248,
+        "baseline_minutes_mae": 16.067410738224684,
+        "multiclass_brier": 0.32525382018437554,
+        "appearance_brier": 0.11864891234056602,
+        "baseline_appearance_brier": 0.14210730126329824,
+        "p60_brier": 0.11434321593312671,
+        "baseline_p60_brier": 0.1383311558153185
+      },
+      "5": {
+        "n": 26309,
+        "minutes_mae": 17.954895555770992,
+        "baseline_minutes_mae": 16.571695664148017,
+        "multiclass_brier": 0.3350538007456349,
+        "appearance_brier": 0.12364005620296319,
+        "baseline_appearance_brier": 0.14799830160976857,
+        "p60_brier": 0.11858322879756494,
+        "baseline_p60_brier": 0.14391269863804199
+      },
+      "6": {
+        "n": 25466,
+        "minutes_mae": 18.302678274261503,
+        "baseline_minutes_mae": 16.983620300062967,
+        "multiclass_brier": 0.3413963933983107,
+        "appearance_brier": 0.12659315838593896,
+        "baseline_appearance_brier": 0.15259419164961488,
+        "p60_brier": 0.12112502442728647,
+        "baseline_p60_brier": 0.14827779887422907
+      }
+    },
+    "by_lead_active_prior": {
+      "1": {
+        "n": 8291,
+        "minutes_mae": 22.131427606993284,
+        "baseline_minutes_mae": 22.21660297469037,
+        "multiclass_brier": 0.3574314846218714,
+        "appearance_brier": 0.09644797597072749,
+        "baseline_appearance_brier": 0.11809353365883547,
+        "p60_brier": 0.15459848970465795,
+        "baseline_p60_brier": 0.1933572118744467
+      },
+      "2": {
+        "n": 8075,
+        "minutes_mae": 26.49543469000849,
+        "baseline_minutes_mae": 24.891051762533273,
+        "multiclass_brier": 0.42131671089136513,
+        "appearance_brier": 0.1250062843771927,
+        "baseline_appearance_brier": 0.14840261740931004,
+        "p60_brier": 0.1835490531651687,
+        "baseline_p60_brier": 0.2228192938516818
+      },
+      "3": {
+        "n": 7850,
+        "minutes_mae": 28.831157052318652,
+        "baseline_minutes_mae": 26.666425634149068,
+        "multiclass_brier": 0.4587817579759261,
+        "appearance_brier": 0.14309012452927639,
+        "baseline_appearance_brier": 0.16745637057948257,
+        "p60_brier": 0.19934980509548067,
+        "baseline_p60_brier": 0.2425155668781096
+      },
+      "4": {
+        "n": 7633,
+        "minutes_mae": 30.23969542461356,
+        "baseline_minutes_mae": 27.93069738738304,
+        "multiclass_brier": 0.48594034174788575,
+        "appearance_brier": 0.1547431016656615,
+        "baseline_appearance_brier": 0.1820990772680078,
+        "p60_brier": 0.21103361759076786,
+        "baseline_p60_brier": 0.2583004812466795
+      },
+      "5": {
+        "n": 7408,
+        "minutes_mae": 31.052580506819236,
+        "baseline_minutes_mae": 28.77793696241143,
+        "multiclass_brier": 0.5013026051834633,
+        "appearance_brier": 0.16390666073362187,
+        "baseline_appearance_brier": 0.1933861544497493,
+        "p60_brier": 0.2164170296482684,
+        "baseline_p60_brier": 0.26695452162765115
+      },
+      "6": {
+        "n": 7186,
+        "minutes_mae": 31.460179725877545,
+        "baseline_minutes_mae": 29.376658195028345,
+        "multiclass_brier": 0.5097472236248611,
+        "appearance_brier": 0.16784185509469435,
+        "baseline_appearance_brier": 0.20090250691364328,
+        "p60_brier": 0.21919781632687516,
+        "baseline_p60_brier": 0.2741024722729704
+      }
+    }
+  },
+  "protocol": {
+    "refit_every": 4,
+    "ensemble_weight": 0.5,
+    "horizon_augmentation": true
+  },
+  "limitations": [
+    "Development replay, not an untouched holdout or proof of future superiority.",
+    "Origin population/prices are archive approximations, final calendar is known ex post.",
+    "No archived injury news; all models evaluated without news adjustment.",
+    "DGW appearance aggregation assumes independence; fixture expectations are additive.",
+    "FPL scoring varies across seasons; no invented full historical rescoring."
+  ],
+  "source_sha256": {
+    "gw_2023-24.csv": "53a2608305584fafff55ea0b77c5eb9b5ca916b7fdac5d7133dd31e054cdd1b7",
+    "teams_2023-24.csv": "7795f091ccea17fda0752cb07b935e1515b09a9d3f924147997cbf28139edd49",
+    "players_2023-24.csv": "e6c813947b12da74af831fde000b192abd2b0c24b20c2ddd73949a0c522d755d",
+    "gw_2024-25.csv": "1c46861a656c811c21da78d0e9962adfc26f1cac2bcf140f9cd035c9d6c60efb",
+    "teams_2024-25.csv": "d10a6db8feca6db9e44a3ba50b15168396667ea387fee9235d6b211c7f598c3b",
+    "players_2024-25.csv": "75794cdfb8e07781b35119a377357e3b2f52762147dd8a01751cbdfd93226d1c",
+    "gw_2025-26.csv": "8dbbc324ea5efbdda975980ec7273b61cf785c473d37106e877af3aedc12ebef",
+    "teams_2025-26.csv": "b29df099cb0ad25413e284e53116099b0e0496874f99743dbc0870d8241b46c5",
+    "players_2025-26.csv": "3098429b72b1d320c0f73db63edb912364ffe953f348fdb4faf43efe718dc551"
+  },
+  "code_sha256": {
+    "evaluate_strategy_models.py": "11c72a6700dcacc06a69d7bd43c03cfe6baa73edb81c5b71929e30615192bd2c",
+    "fpl_features.py": "e904ecd43cad98e6a21a6700507bd65ee8f7987d9a472df34d4f83f73f3fcd62",
+    "fpl_model.py": "fdbb7cbf40d6f5a933c29596b55077ee36c0f563d312c171905b156202049138",
+    "minutes_model.py": "f770c197e9601932d88c0f53216b4e24b62563bac4f8055fa1a7b94271bb1e92"
+  }
+}
