@@ -5,7 +5,9 @@ assumptions, NOT a learned claim about the optimal date later in the season.
 No action is sent to FPL; this module only writes a reviewable recommendation.
 """
 import argparse
+from collections import Counter, deque
 import copy
+from functools import lru_cache
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -102,10 +104,109 @@ def _check_squad(ids, metadata, xi=None, club_limit=3):
         if xi is not None and not low <= sum(metadata[i]["pos"] == pos for i in xi) <= high:
             raise ValueError("Invalid XI formation: " + pos)
     teams = [metadata[i]["team"] for i in ids]
-    if any(teams.count(t) > club_limit for t in set(teams)):
+    if club_limit is not None and any(teams.count(t) > club_limit for t in set(teams)):
         raise ValueError("Club limit exceeded")
     if xi is not None and (len(xi) != 11 or not set(xi).issubset(ids)):
         raise ValueError("Invalid starting XI")
+
+
+def _freehit_seed(owned, metadata, first, bank, selling, club_limit):
+    """Cheapest legal FH roster by integer min-cost flow, without another MILP.
+
+    Position supplies and club capacities form a bipartite flow network. Keeping
+    an owned player costs their sale value, so the cash test preserves spreads.
+    This supplies a legal forced-FH incumbent even when the permanent squad has
+    grandfathered club overflow. It is only a seed, never the recommendation.
+    """
+    clubs = sorted({m["team"] for m in metadata.values()})
+    positions = {pos: n + 1 for n, pos in enumerate(QUOTA)}
+    team_nodes = {club: len(positions) + n + 1 for n, club in enumerate(clubs)}
+    sink = len(positions) + len(clubs) + 1
+    graph = [[] for _ in range(sink + 1)]
+
+    def add(a, b, capacity, cost):
+        forward = [b, capacity, cost, len(graph[b])]
+        reverse = [a, 0, -cost, len(graph[a])]
+        graph[a].append(forward)
+        graph[b].append(reverse)
+        return forward
+
+    for pos, (number, _, _) in QUOTA.items():
+        add(0, positions[pos], number, 0)
+    for team in clubs:
+        add(team_nodes[team], sink, club_limit, 0)
+    edges = {}
+    for pid, info in metadata.items():
+        if pid not in owned and "can_select" in first and not bool(first.loc[pid, "can_select"]):
+            continue
+        cost = selling[pid] if pid in owned else info["price"]
+        edges[pid] = add(positions[info["pos"]], team_nodes[info["team"]], 1, cost)
+    for _ in range(15):
+        distance, previous = [float("inf")] * len(graph), [None] * len(graph)
+        distance[0] = 0
+        queue, queued = deque([0]), {0}
+        while queue:
+            node = queue.popleft()
+            queued.remove(node)
+            for index, edge in enumerate(graph[node]):
+                target, capacity, cost, _ = edge
+                if capacity and distance[node] + cost < distance[target]:
+                    distance[target] = distance[node] + cost
+                    previous[target] = node, index
+                    if target not in queued:
+                        queue.append(target)
+                        queued.add(target)
+        if previous[sink] is None:
+            raise ValueError("No legal Free Hit roster can repair the existing club overflow")
+        node = sink
+        while node:
+            parent, index = previous[node]
+            edge = graph[parent][index]
+            edge[1] -= 1
+            graph[node][edge[3]][1] += 1
+            node = parent
+    selected = {pid for pid, edge in edges.items() if edge[1] == 0}
+    cost = sum(selling[i] if i in owned else metadata[i]["price"] for i in selected)
+    if cost > bank + sum(selling.values()):
+        raise ValueError("No affordable Free Hit roster can repair the existing club overflow")
+    _check_squad(list(selected), metadata, club_limit=club_limit)
+    return selected
+
+
+def _scoring_chip_seed(steps, chips, xp, reserves, discount):
+    """Exactly schedule BB/TC on fixed baseline squads before the joint solve.
+
+    These chips leave transfers, bank and FT unchanged. A small matching DP
+    prevents a short search from missing a profitable expiring scoring chip.
+    WC/FH remain decisions for the full model because they change the squads.
+    """
+    if not steps:
+        return ()
+    end = steps[-1]["gw"]
+
+    @lru_cache(None)
+    def choose(t, used):
+        if t == len(steps):
+            return 0.0, ()
+        best = choose(t + 1, used)
+        step = steps[t]
+        if step.get("chip"):
+            return best
+        for j, chip in enumerate(chips):
+            if used & (1 << j) or chip["name"] not in ("bboost", "3xc"):
+                continue
+            if not int(chip["start_event"]) <= step["gw"] <= int(chip["stop_event"]):
+                continue
+            bonus = (xp[step["captain"], step["gw"]] if chip["name"] == "3xc"
+                     else sum(xp[i, step["gw"]] for i in step["bench"]))
+            reserve = reserves[chip["name"]] if int(chip["stop_event"]) > end else 0.0
+            future, schedule = choose(t + 1, used | (1 << j))
+            gain = discount ** t * bonus - reserve + future
+            if gain > best[0] + 1e-9:
+                best = gain, ((j, t),) + schedule
+        return best
+
+    return choose(0, 0)[1]
 
 
 def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
@@ -159,12 +260,20 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
             raise ValueError("This planner requires constant prices/positions/clubs across horizon")
     rules = state.get("rules", {})
     max_ft = int(rules.get("max_free_transfers", 5))
+    ft_overrides = {int(g): int(v) for g, v in rules.get("free_transfer_overrides", {}).items()}
+    if any(not 1 <= g <= 38 or not 1 <= v <= max_ft for g, v in ft_overrides.items()):
+        raise ValueError("Invalid dated free-transfer override")
     hit = int(rules.get("transfer_hit", 4))
     club_limit = int(rules.get("club_limit", 3))
     free0, bank0 = int(state["free_transfers"]), int(state["bank"])
+    free0 = ft_overrides.get(start, free0)
     if not 1 <= free0 <= max_ft or bank0 < 0:
         raise ValueError("Invalid confirmed free transfers or bank")
-    _check_squad(list(owned), metadata, club_limit=club_limit)
+    # A real club move may leave an already-owned squad above the normal quota.
+    # Holding it is legal; the first permanent transfer must repair every club.
+    _check_squad(list(owned), metadata, club_limit=None)
+    initial_excess = {team: count - club_limit for team, count in
+                      Counter(metadata[i]["team"] for i in owned).items() if count > club_limit}
     sell0 = {}
     for i, p in owned.items():
         buy = int(p["purchase_price"])
@@ -210,6 +319,7 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
 
     persistent, active, xi, captain = {}, {}, {}, {}
     incoming, outgoing, original, original_out = {}, {}, {}, {}
+    bb_seed_vars, tc_seed_vars, keep_seed_vars = {}, {}, {}
     banks, choices = {}, {}
     for t, gw in enumerate(gws):
         weight = discount ** t
@@ -217,7 +327,8 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
         wc = per_name.get(("wildcard", t), [])
         bb = per_name.get(("bboost", t), [])
         tc = per_name.get(("3xc", t), [])
-        banks[t] = model.var(upper=np.inf, integer=False)
+        banks[t] = model.var(upper=bank0+sum(metadata[i]["price"] for i in owned), integer=False)
+        bb_bonus, tc_bonus = [], []
         for i in ids:
             key = i, t
             persistent[key] = model.var()
@@ -265,22 +376,31 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
             # Bench Boost adds the bench once; Triple Captain adds captain once.
             if bb:
                 b = model.var(reward=weight * xp[i, gw], integer=False)
+                bb_seed_vars[key] = b
+                bb_bonus.append(b)
                 model.row([(b, 1), (active[key], -1)], upper=0)
                 model.row([(b, 1), (xi[key], 1)], upper=1)
+                model.row([(b, 1), (active[key], -1), (xi[key], 1)], upper=0)
                 model.row([(b, 1)] + [(v, -1) for v in bb], upper=0)
                 model.row([(active[key], 1), (xi[key], -1), (b, -1)] + [(v, 1) for v in bb], upper=1)
             if tc:
                 c = model.var(reward=weight * xp[i, gw], integer=False)
+                tc_seed_vars[key] = c
+                tc_bonus.append(c)
                 model.row([(c, 1), (captain[key], -1)], upper=0)
                 model.row([(c, 1)] + [(v, -1) for v in tc], upper=0)
                 model.row([(captain[key], 1), (c, -1)] + [(v, 1) for v in tc], upper=1)
+
+        # Valid integer identities substantially tighten the chip LP relaxation.
+        if bb:
+            model.eq([(v, 1) for v in bb_bonus]+[(v, -4) for v in bb])
+        if tc:
+            model.eq([(v, 1) for v in tc_bonus]+[(v, -1) for v in tc])
 
         for roster in (persistent, active):
             model.eq([(roster[i, t], 1) for i in ids], 15)
             for pos, (number, _, _) in QUOTA.items():
                 model.eq([(roster[i, t], 1) for i in ids if metadata[i]["pos"] == pos], number)
-            for team in {m["team"] for m in metadata.values()}:
-                model.row([(roster[i, t], 1) for i in ids if metadata[i]["team"] == team], upper=club_limit)
         model.eq([(xi[i, t], 1) for i in ids], 11)
         model.eq([(captain[i, t], 1) for i in ids], 1)
         for pos, (_, low, high) in QUOTA.items():
@@ -310,6 +430,7 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
                     continue
                 if t:
                     keep = model.var(integer=False)
+                    keep_seed_vars[i, t] = keep
                     model.row([(keep, 1), (active[i, t], -1)], upper=0)
                     model.row([(keep, 1), (original[i, t - 1], -1)], upper=0)
                     model.row([(active[i, t], 1), (original[i, t - 1], 1), (keep, -1)], upper=1)
@@ -326,7 +447,7 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
         for free in range(1, max_ft + 1):
             for n in range(16):
                 for special in range(2 if transfer_chips else 1):
-                    after = free if special else min(max_ft, max(0, free - n) + 1)
+                    after = ft_overrides.get(gw + 1, free if special else min(max_ft, max(0, free - n) + 1))
                     charged = 0 if special else max(0, n - free)
                     terminal = ft_value * after if t == len(gws) - 1 else 0
                     q = model.var(reward=-weight * hit * charged + terminal)
@@ -339,20 +460,45 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
         model.eq([(q, n) for q, _, n, *_ in choices[t]] + [(incoming[i, t], -1) for i in ids])
         model.eq([(q, special) for q, _, _, special, *_ in choices[t]] + [(v, -1) for v in transfer_chips])
 
+        # Overflow is permitted only on a zero-transfer transition. Inductively
+        # zero transfers cannot create it, and any acquisition restores <=3.
+        # FH always has zero permanent transfers, but its active roster must be
+        # legal while the grandfathered permanent holdings revert unchanged.
+        no_transfers = [q for q, _, n, *_ in choices[t] if n == 0]
+        for team in {m["team"] for m in metadata.values()}:
+            excess = initial_excess.get(team, 0)
+            allowance = [(q, -excess) for q in no_transfers]
+            for roster in (persistent, active):
+                terms = [(roster[i, t], 1) for i in ids if metadata[i]["team"] == team] + allowance
+                if roster is active:
+                    terms += [(v, excess) for v in fh]
+                model.row(terms, upper=club_limit)
+
     # Supply every integer decision. HiGHS completes continuous auxiliaries by
     # LP, so even a zero-time search starts with a legal incumbent. A forced-chip
     # comparison starts from a no-transfer roster using exactly that chip.
-    seed, seed_free = {}, free0
+    # A complete feasible seed avoids relying on a timed LP to fill auxiliaries
+    # when the requested MIP search budget is zero.
+    seed, seed_free = dict.fromkeys(range(len(model.cost)), 0), free0
+    seed_previous, seed_original = set(owned), set(owned)
+    forced_fh_roster = (_freehit_seed(owned, metadata, first, bank0, sell0, club_limit)
+                        if initial_excess and forced_chip and forced_chip[0] == "freehit" else None)
+    seed_chips = (set(_scoring_chip_seed(baseline["steps"], chips, xp, reserves, discount))
+                  if baseline else set())
     for (j, t), v in chip_vars.items():
-        seed[v] = int(bool(forced_chip) and (chips[j]["name"], gws[t]) == forced_chip)
+        seed[v] = int((j, t) in seed_chips or
+                      bool(forced_chip) and (chips[j]["name"], gws[t]) == forced_chip)
     for t, gw in enumerate(gws):
         if baseline:
             step = baseline["steps"][t]
             holdings = set(step["permanent_squad"])
             starters, cap = set(step["starting_xi"]), step["captain"]
             n, seed_cash = len(step["transfer_in"]), step["bank"]
+            seed_active = holdings
         else:
             holdings, n, seed_cash = set(owned), 0, bank0
+            seed_active = (forced_fh_roster if forced_fh_roster is not None and forced_chip[1] == gw
+                           else holdings)
             alternatives = []
             for defenders in range(3, 6):
                 for mids in range(2, 6):
@@ -361,22 +507,36 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
                         continue
                     lineup = []
                     for pos, count in {"GK": 1, "DEF": defenders, "MID": mids, "FWD": forwards}.items():
-                        lineup += sorted((i for i in holdings if metadata[i]["pos"] == pos),
+                        lineup += sorted((i for i in seed_active if metadata[i]["pos"] == pos),
                                          key=lambda i: (-xp[i, gw], i))[:count]
                     c = max(lineup, key=lambda i: xp[i, gw])
                     alternatives.append((sum(xp[i, gw] for i in lineup) + xp[c, gw], lineup, c))
             _, lineup, cap = max(alternatives, key=lambda item: item[0])
             starters = set(lineup)
         for i in ids:
-            for variables in (persistent, active):
-                seed[variables[i, t]] = int(i in holdings)
+            seed[persistent[i, t]] = int(i in holdings)
+            seed[active[i, t]] = int(i in seed_active)
             seed[xi[i, t]] = int(i in starters)
             seed[captain[i, t]] = int(i == cap)
+            seed[incoming[i, t]] = int(i in holdings and i not in seed_previous)
+            seed[outgoing[i, t]] = int(i in seed_previous and i not in holdings)
+            if i in owned:
+                seed[original_out[i, t]] = int(i in seed_original and i not in holdings)
+                seed[original[i, t]] = int(i in seed_original and i in holdings)
+            if (i, t) in keep_seed_vars:
+                seed[keep_seed_vars[i, t]] = int(i in seed_original and i in seed_active)
+            if (i, t) in bb_seed_vars:
+                seed[bb_seed_vars[i, t]] = int(any(seed[v] for v in per_name.get(("bboost", t), []))
+                                                and i in seed_active and i not in starters)
+            if (i, t) in tc_seed_vars:
+                seed[tc_seed_vars[i, t]] = int(any(seed[v] for v in per_name.get(("3xc", t), [])) and i == cap)
         seed[banks[t]] = seed_cash
         special = int(bool(forced_chip) and forced_chip[1] == gw and forced_chip[0] in ("wildcard", "freehit"))
         for q, before, transfers, c, _, _ in choices[t]:
             seed[q] = int((before, transfers, c) == (seed_free, n, special))
-        seed_free = seed_free if special else min(max_ft, max(0, seed_free - n) + 1)
+        seed_free = ft_overrides.get(gw + 1, seed_free if special else min(max_ft, max(0, seed_free - n) + 1))
+        seed_original &= holdings
+        seed_previous = holdings
     result = model.solve(seconds, seed)
     if result.x is None or not np.isfinite(result.x).all() or result.status not in (0, 1):
         if baseline:
@@ -408,8 +568,10 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
         used.update(chosen)
         if chip == "freehit" and previous_chip == "freehit":
             raise RuntimeError("Consecutive Free Hits")
-        _check_squad(list(perm), metadata, club_limit=club_limit)
-        _check_squad(roster, metadata, starters, club_limit)
+        _check_squad(list(perm), metadata, club_limit=club_limit if ins else None)
+        _check_squad(roster, metadata, starters, club_limit if ins or chip == "freehit" else None)
+        if not ins and perm != previous:
+            raise RuntimeError("Zero-transfer transition changed permanent holdings")
         if len(captains) != 1 or captains[0] not in starters:
             raise RuntimeError("Invalid captain")
         if chip == "freehit":
@@ -428,7 +590,7 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
         if cash < 0 or abs(values[banks[t]] - cash) > 1e-4:
             raise RuntimeError("Budget validation failed")
         charged = 0 if chip in ("freehit", "wildcard") else max(0, len(ins) - free)
-        next_free = free if chip in ("freehit", "wildcard") else min(max_ft, max(0, free - len(ins)) + 1)
+        next_free = ft_overrides.get(gw + 1, free if chip in ("freehit", "wildcard") else min(max_ft, max(0, free - len(ins)) + 1))
         captain_id = captains[0]
         vice = max((i for i in starters if i != captain_id), key=lambda i: xp[i, gw])
         bench = sorted((i for i in roster if i not in starters), key=lambda i: (metadata[i]["pos"] != "GK", -xp[i, gw]))
@@ -461,6 +623,9 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
             "warnings": ["Re-plan after every gameweek and before executing transfers.",
                          "Chip timing depends on heuristic opportunity costs beyond the forecast horizon.",
                          "Expected points are model estimates, not a guaranteed score."]}
+    if initial_excess:
+        output["assumptions"]["grandfathered_initial_club_excess"] = initial_excess
+        output["warnings"].append("Existing club overflow may be held; every permanent transfer and each Free Hit active squad must restore the club quota.")
     def utility(candidate):
         score = sum(discount ** t * (step["net_predicted_points"] +
                     0.001 * sum(xp[i, step["gw"]] for i in step["bench"]))
@@ -485,6 +650,43 @@ def plan(state, forecasts, *, allow_chips=True, chip_reserves=None,
     return output
 
 
+def refine_plan_lineups(output, forecasts):
+    """Improve only submitted lineups after the transfer MILP has been selected.
+
+    Transfer/chip decisions and their solver bound are unchanged. This is a
+    local refinement, not a stochastic globally optimal transfer solution.
+    """
+    from lineup_uncertainty import refine_lineup
+    if "p_no_appearance" not in forecasts:
+        return output
+    result=copy.deepcopy(output)
+    result["milp_original_discounted_net_points"]=output["discounted_net_points"]
+    steps=[]
+    for original in output["steps"]:
+        block=forecasts[forecasts.gw.eq(original["gw"])]
+        step=refine_lineup(original,block)
+        xp=block.set_index("element").pred.to_dict()
+        mean=sum(xp[i] for i in (step["squad"] if step["chip"]=="bboost" else step["starting_xi"]))
+        mean+=xp[step["captain"]]*(2 if step["chip"]=="3xc" else 1)
+        step["milp_original_predicted_points"]=original["predicted_points"]
+        step["predicted_points"]=round(mean,3)
+        step["net_predicted_points"]=round(mean-step["hit_cost"],3)
+        step["lineup_refinement"]["legacy_predicted_points_are_original_planner_values"]=False
+        step["lineup_refinement"]["original_planner_mean_field"]="milp_original_predicted_points"
+        steps.append(step)
+    result["steps"]=steps
+    discount=result["assumptions"]["discount"]
+    result["discounted_net_points"]=round(sum(discount**t*s["net_predicted_points"] for t,s in enumerate(steps)),3)
+    result["discounted_points_with_contingencies"]=round(sum(discount**t*s["expected_net_points_with_contingencies"] for t,s in enumerate(steps)),3)
+    result["assumptions"].update({"automatic_substitutions_modelled":True,
+        "vice_captain_contingency_modelled":True,
+        "appearance_independence_assumed":True,
+        "contingencies_in_transfer_milp_objective":False,
+        "lineup_refinement":"fixed squad, original XI plus legal single swaps, exact independent appearance expectation"})
+    result["warnings"].append("Lineup contingencies are refined after transfer/chip selection; solver bounds apply to the original deterministic MILP objective.")
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--state", required=True)
@@ -495,11 +697,15 @@ def main():
     parser.add_argument("--discount", type=float, default=0.9)
     parser.add_argument("--ft-value", type=float, default=1.5)
     parser.add_argument("--chip-reserves", help="JSON object with opportunity costs in expected points")
+    parser.add_argument("--no-lineup-refinement",action="store_true")
     args = parser.parse_args()
     state = json.loads(Path(args.state).read_text())
-    output = plan(state, pd.read_csv(args.forecasts), allow_chips=not args.no_chips,
+    forecasts=pd.read_csv(args.forecasts)
+    output = plan(state, forecasts, allow_chips=not args.no_chips,
                   chip_reserves=json.loads(args.chip_reserves) if args.chip_reserves else None,
                   discount=args.discount, ft_value=args.ft_value, seconds=args.seconds)
+    if not args.no_lineup_refinement:
+        output=refine_plan_lineups(output,forecasts)
     destination = Path(args.output)
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".tmp")

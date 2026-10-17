@@ -1,0 +1,16 @@
+element,name,position,role,bench_order,is_captain,is_vice_captain,price
+1,Raya,GK,XI,,False,False,6.1
+8,Calafiori,DEF,XI,,False,False,5.9
+115,De Cuyper,DEF,XI,,False,False,5.2
+113,F.Kadıoğlu,DEF,XI,,False,False,4.4
+469,N.Williams,DEF,XI,,False,False,5.0
+112,Van Hecke,DEF,XI,,False,False,4.9
+481,Anderson,MID,XI,,False,False,6.3
+426,B.Fernandes,MID,XI,,False,False,11.8
+40,Rogers,MID,XI,,False,False,7.9
+397,Semenyo,MID,XI,,False,True,8.3
+411,Haaland,FWD,XI,,True,False,15.7
+250,Leno,GK,bench,0,False,False,4.5
+210,Wharton,MID,bench,1,False,False,5.4
+272,Kusi-Asare,FWD,bench,2,False,False,4.4
+321,Walle Egeli,FWD,bench,3,False,False,4.5

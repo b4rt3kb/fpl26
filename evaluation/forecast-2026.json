@@ -1,0 +1,500 @@
+{
+  "season": "2026-27",
+  "horizon": 6,
+  "origins": [
+    {
+      "origin": 1,
+      "trained_origin": 1,
+      "cutoff": "2026-08-21T19:00:00+00:00",
+      "training_rows": 86755,
+      "minutes_training_rows": 155549,
+      "players": 610,
+      "minutes_fit": {
+        "base_rows": 149544,
+        "calibration_rows": 4273,
+        "purged_overlap_rows": 1732,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-05-01T19:00:00+00:00",
+        "base_latest_completion": "2026-04-27T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          52.041666666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          89845,
+          18869,
+          40830
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.4769386372190486,
+        "raw_brier": 0.26930628464094125,
+        "calibrated_log_loss": 0.4750615783744909,
+        "calibrated_brier": 0.26819629213021307,
+        "calibration_minutes_mae": 13.52079160642215
+      }
+    },
+    {
+      "origin": 2,
+      "trained_origin": 2,
+      "cutoff": "2026-08-28T19:00:00+00:00",
+      "training_rows": 87365,
+      "minutes_training_rows": 156159,
+      "players": 626,
+      "minutes_fit": {
+        "base_rows": 151201,
+        "calibration_rows": 4051,
+        "purged_overlap_rows": 907,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-05-09T11:30:00+00:00",
+        "base_latest_completion": "2026-05-04T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          52.041666666666664
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          90893,
+          19072,
+          41236
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.5350145095918412,
+        "raw_brier": 0.306169169048569,
+        "calibrated_log_loss": 0.5335226372109919,
+        "calibrated_brier": 0.30528638993835977,
+        "calibration_minutes_mae": 15.964950785509526
+      }
+    },
+    {
+      "origin": 3,
+      "trained_origin": 3,
+      "cutoff": "2026-09-04T19:00:00+00:00",
+      "training_rows": 87991,
+      "minutes_training_rows": 156785,
+      "players": 654,
+      "minutes_fit": {
+        "base_rows": 153028,
+        "calibration_rows": 3757,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-05-15T19:00:00+00:00",
+        "base_latest_completion": "2026-05-13T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          53.958333333333336
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          92072,
+          19270,
+          41686
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.5683709651015268,
+        "raw_brier": 0.3261392873731167,
+        "calibrated_log_loss": 0.5660783763959835,
+        "calibrated_brier": 0.3247831515749086,
+        "calibration_minutes_mae": 16.549714699142402
+      }
+    },
+    {
+      "origin": 4,
+      "trained_origin": 4,
+      "cutoff": "2026-09-12T14:00:00+00:00",
+      "training_rows": 88645,
+      "minutes_training_rows": 157439,
+      "players": 659,
+      "minutes_fit": {
+        "base_rows": 153868,
+        "calibration_rows": 2731,
+        "purged_overlap_rows": 840,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-05-24T15:00:00+00:00",
+        "base_latest_completion": "2026-05-19T21:15:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          53.958333333333336
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          92606,
+          19367,
+          41895
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.6096716239669393,
+        "raw_brier": 0.3476768910114865,
+        "calibrated_log_loss": 0.6074411611214869,
+        "calibrated_brier": 0.34663657897494926,
+        "calibration_minutes_mae": 17.325407167397323
+      }
+    },
+    {
+      "origin": 5,
+      "trained_origin": 5,
+      "cutoff": "2026-09-18T19:00:00+00:00",
+      "training_rows": 89304,
+      "minutes_training_rows": 158098,
+      "players": 667,
+      "minutes_fit": {
+        "base_rows": 155549,
+        "calibration_rows": 2549,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-08-21T19:00:00+00:00",
+        "base_latest_completion": "2026-05-24T17:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          53.958333333333336
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          93663,
+          19587,
+          42299
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.6107500608737955,
+        "raw_brier": 0.34954057874679445,
+        "calibrated_log_loss": 0.6102761397005443,
+        "calibrated_brier": 0.34907844920511133,
+        "calibration_minutes_mae": 16.7701727044519
+      }
+    },
+    {
+      "origin": 6,
+      "trained_origin": 6,
+      "cutoff": "2026-10-10T11:30:00+00:00",
+      "training_rows": 89971,
+      "minutes_training_rows": 158765,
+      "players": 667,
+      "minutes_fit": {
+        "base_rows": 156159,
+        "calibration_rows": 2606,
+        "purged_overlap_rows": 0,
+        "calibration_applied": true,
+        "calibration_reason": "temporal holdout temperature and class intercepts",
+        "calibration_start": "2026-08-28T19:00:00+00:00",
+        "base_latest_completion": "2026-08-24T21:00:00+00:00",
+        "training_lead_days_range": [
+          0.0,
+          53.958333333333336
+        ],
+        "start_supported": true,
+        "class_counts_base": [
+          93963,
+          19687,
+          42509
+        ],
+        "calibration_metrics_scope": "calibrator fitting data; not independent test performance",
+        "raw_log_loss": 0.52016806541729,
+        "raw_brier": 0.2902526745316984,
+        "calibrated_log_loss": 0.5186010141064866,
+        "calibrated_brier": 0.2892206543720378,
+        "calibration_minutes_mae": 12.90560812800609
+      }
+    }
+  ],
+  "metrics": {
+    "hgb": {
+      "all": {
+        "n": 3883,
+        "mae": 1.2444467788965055,
+        "rmse": 2.202923805037846,
+        "bias": -0.044696946690783154,
+        "spearman_per_gw": 0.6444781581952556,
+        "top20_actual_mean": 4.825,
+        "captain_raw_points": 37.0
+      },
+      "active_prior": {
+        "n": 1301,
+        "mae": 2.3419826667223425,
+        "rmse": 3.1628064539510046,
+        "bias": -0.13559240682100743,
+        "spearman_per_gw": 0.24913395956109677,
+        "top20_actual_mean": 4.750000000000001,
+        "captain_raw_points": 37.0
+      },
+      "frozen_horizon_active": {
+        "n": 4429,
+        "mae": 2.3620026892534813,
+        "rmse": 3.1394244008127323,
+        "bias": 0.04030226382841749,
+        "spearman_per_gw": 0.22749445029405604,
+        "top20_actual_mean": 4.261904761904762,
+        "captain_raw_points": 123.0
+      }
+    },
+    "minutes_model": {
+      "all": {
+        "n": 3883,
+        "mae": 1.2518776476768518,
+        "rmse": 2.2045412575427883,
+        "bias": -0.013126111977912398,
+        "spearman_per_gw": 0.6595826702453135,
+        "top20_actual_mean": 4.091666666666666,
+        "captain_raw_points": 33.0
+      },
+      "active_prior": {
+        "n": 1301,
+        "mae": 2.357828385323433,
+        "rmse": 3.1877153102320954,
+        "bias": -0.10657076568820638,
+        "spearman_per_gw": 0.26239640987151647,
+        "top20_actual_mean": 4.091666666666666,
+        "captain_raw_points": 33.0
+      },
+      "frozen_horizon_active": {
+        "n": 4429,
+        "mae": 2.3673643220221843,
+        "rmse": 3.168690917967579,
+        "bias": 0.003770689716013283,
+        "spearman_per_gw": 0.22821894101359735,
+        "top20_actual_mean": 4.092857142857143,
+        "captain_raw_points": 77.0
+      }
+    },
+    "ensemble": {
+      "all": {
+        "n": 3883,
+        "mae": 1.2430384550852256,
+        "rmse": 2.1936928934705513,
+        "bias": -0.02891152933434779,
+        "spearman_per_gw": 0.6570990509653174,
+        "top20_actual_mean": 4.716666666666667,
+        "captain_raw_points": 40.0
+      },
+      "active_prior": {
+        "n": 1301,
+        "mae": 2.3403641265115556,
+        "rmse": 3.159894527841952,
+        "bias": -0.1210815862546069,
+        "spearman_per_gw": 0.2710246770197469,
+        "top20_actual_mean": 4.65,
+        "captain_raw_points": 40.0
+      },
+      "frozen_horizon_active": {
+        "n": 4429,
+        "mae": 2.354807673813269,
+        "rmse": 3.1378925222439125,
+        "bias": 0.022036476772215374,
+        "spearman_per_gw": 0.2389583813044243,
+        "top20_actual_mean": 4.357142857142858,
+        "captain_raw_points": 108.0
+      }
+    },
+    "rolling10": {
+      "all": {
+        "n": 3883,
+        "mae": 1.3406465881417424,
+        "rmse": 2.4887991303709973,
+        "bias": 0.02918863602477737,
+        "spearman_per_gw": 0.6224496723586216,
+        "top20_actual_mean": 4.125,
+        "captain_raw_points": 18.0
+      },
+      "active_prior": {
+        "n": 1301,
+        "mae": 2.7498631282279486,
+        "rmse": 3.697701392240606,
+        "bias": 0.4181007861698829,
+        "spearman_per_gw": 0.20041468433471368,
+        "top20_actual_mean": 4.191666666666666,
+        "captain_raw_points": 18.0
+      },
+      "frozen_horizon_active": {
+        "n": 4429,
+        "mae": 2.7926954720284565,
+        "rmse": 3.7417577717582775,
+        "bias": 0.6410929955278805,
+        "spearman_per_gw": 0.1926991628997451,
+        "top20_actual_mean": 4.019047619047619,
+        "captain_raw_points": 97.0
+      }
+    }
+  },
+  "minutes": {
+    "next_gw": {
+      "n": 3883,
+      "minutes_mae": 15.986236620933177,
+      "baseline_minutes_mae": 14.936058437363045,
+      "multiclass_brier": 0.3300970515192031,
+      "appearance_brier": 0.12068703686702287,
+      "baseline_appearance_brier": 0.14733366437677253,
+      "p60_brier": 0.0988957245907402,
+      "baseline_p60_brier": 0.12018524991848228
+    },
+    "next_gw_active_prior": {
+      "n": 1301,
+      "minutes_mae": 21.779759996132025,
+      "baseline_minutes_mae": 20.441002198039296,
+      "multiclass_brier": 0.3426096323072531,
+      "appearance_brier": 0.09725733900808288,
+      "baseline_appearance_brier": 0.1153648635457868,
+      "p60_brier": 0.1491148698048486,
+      "baseline_p60_brier": 0.18662192438722744
+    },
+    "by_lead": {
+      "1": {
+        "n": 3883,
+        "minutes_mae": 15.986236620933177,
+        "baseline_minutes_mae": 14.936058437363045,
+        "multiclass_brier": 0.3300970515192031,
+        "appearance_brier": 0.12068703686702287,
+        "baseline_appearance_brier": 0.14733366437677253,
+        "p60_brier": 0.0988957245907402,
+        "baseline_p60_brier": 0.12018524991848228
+      },
+      "2": {
+        "n": 3199,
+        "minutes_mae": 19.372774673321025,
+        "baseline_minutes_mae": 17.28130089995229,
+        "multiclass_brier": 0.37041944809921173,
+        "appearance_brier": 0.1377356711263141,
+        "baseline_appearance_brier": 0.1708420226157547,
+        "p60_brier": 0.11933464107362779,
+        "baseline_p60_brier": 0.1477337635990711
+      },
+      "3": {
+        "n": 2524,
+        "minutes_mae": 21.724656357644967,
+        "baseline_minutes_mae": 19.82041524174938,
+        "multiclass_brier": 0.40829995689178866,
+        "appearance_brier": 0.15747274062726818,
+        "baseline_appearance_brier": 0.1979314550033437,
+        "p60_brier": 0.13637186490818334,
+        "baseline_p60_brier": 0.17121422599262665
+      },
+      "4": {
+        "n": 1865,
+        "minutes_mae": 23.82870324278037,
+        "baseline_minutes_mae": 22.286778608720194,
+        "multiclass_brier": 0.4424261645833385,
+        "appearance_brier": 0.1717295923237271,
+        "baseline_appearance_brier": 0.218246641598116,
+        "p60_brier": 0.1526647068437154,
+        "baseline_p60_brier": 0.1986542646012939
+      },
+      "5": {
+        "n": 1213,
+        "minutes_mae": 25.55860056349412,
+        "baseline_minutes_mae": 24.149694103354015,
+        "multiclass_brier": 0.45617479833392055,
+        "appearance_brier": 0.17972744290356157,
+        "baseline_appearance_brier": 0.23086002186734103,
+        "p60_brier": 0.16157535732470177,
+        "baseline_p60_brier": 0.2055005576225524
+      },
+      "6": {
+        "n": 595,
+        "minutes_mae": 27.931416277824304,
+        "baseline_minutes_mae": 26.67788589119858,
+        "multiclass_brier": 0.48247281131371095,
+        "appearance_brier": 0.19072127252697804,
+        "baseline_appearance_brier": 0.21753840493907628,
+        "p60_brier": 0.17295969952814508,
+        "baseline_p60_brier": 0.18285110796139528
+      }
+    },
+    "by_lead_active_prior": {
+      "1": {
+        "n": 1301,
+        "minutes_mae": 21.779759996132025,
+        "baseline_minutes_mae": 20.441002198039296,
+        "multiclass_brier": 0.3426096323072531,
+        "appearance_brier": 0.09725733900808288,
+        "baseline_appearance_brier": 0.1153648635457868,
+        "p60_brier": 0.1491148698048486,
+        "baseline_p60_brier": 0.18662192438722744
+      },
+      "2": {
+        "n": 1071,
+        "minutes_mae": 26.248320954579192,
+        "baseline_minutes_mae": 23.44409635199109,
+        "multiclass_brier": 0.40168536058354976,
+        "appearance_brier": 0.12490696523244024,
+        "baseline_appearance_brier": 0.14816104433771046,
+        "p60_brier": 0.1744305520260218,
+        "baseline_p60_brier": 0.22271236561380137
+      },
+      "3": {
+        "n": 843,
+        "minutes_mae": 29.503237061410516,
+        "baseline_minutes_mae": 27.123472976628996,
+        "multiclass_brier": 0.4645945966172255,
+        "appearance_brier": 0.15332875352531247,
+        "baseline_appearance_brier": 0.18536300619188603,
+        "p60_brier": 0.19910722880608575,
+        "baseline_p60_brier": 0.2659204371184077
+      },
+      "4": {
+        "n": 621,
+        "minutes_mae": 31.766619082149727,
+        "baseline_minutes_mae": 30.24014747012459,
+        "multiclass_brier": 0.5176045598543201,
+        "appearance_brier": 0.17996464990762293,
+        "baseline_appearance_brier": 0.22051504771194305,
+        "p60_brier": 0.21566967261855394,
+        "baseline_p60_brier": 0.30198490241103126
+      },
+      "5": {
+        "n": 396,
+        "minutes_mae": 33.52475867078967,
+        "baseline_minutes_mae": 31.9650451887294,
+        "multiclass_brier": 0.5274554708612775,
+        "appearance_brier": 0.18462865676682524,
+        "baseline_appearance_brier": 0.22111087545196503,
+        "p60_brier": 0.22550140151931025,
+        "baseline_p60_brier": 0.3142143088834378
+      },
+      "6": {
+        "n": 174,
+        "minutes_mae": 34.429989027136166,
+        "baseline_minutes_mae": 32.35087719298245,
+        "multiclass_brier": 0.5419747240242833,
+        "appearance_brier": 0.18235706910517563,
+        "baseline_appearance_brier": 0.20433852750448414,
+        "p60_brier": 0.22507303410636834,
+        "baseline_p60_brier": 0.2518230169652358
+      }
+    }
+  },
+  "protocol": {
+    "refit_every": 1,
+    "ensemble_weight": 0.5,
+    "horizon_augmentation": true
+  },
+  "limitations": [
+    "Development replay, not an untouched holdout or proof of future superiority.",
+    "Origin population/prices are archive approximations, final calendar is known ex post.",
+    "No archived injury news; all models evaluated without news adjustment.",
+    "DGW appearance aggregation assumes independence; fixture expectations are additive.",
+    "FPL scoring varies across seasons; no invented full historical rescoring."
+  ],
+  "source_sha256": {
+    "gw_2023-24.csv": "53a2608305584fafff55ea0b77c5eb9b5ca916b7fdac5d7133dd31e054cdd1b7",
+    "teams_2023-24.csv": "7795f091ccea17fda0752cb07b935e1515b09a9d3f924147997cbf28139edd49",
+    "players_2023-24.csv": "e6c813947b12da74af831fde000b192abd2b0c24b20c2ddd73949a0c522d755d",
+    "gw_2024-25.csv": "1c46861a656c811c21da78d0e9962adfc26f1cac2bcf140f9cd035c9d6c60efb",
+    "teams_2024-25.csv": "d10a6db8feca6db9e44a3ba50b15168396667ea387fee9235d6b211c7f598c3b",
+    "players_2024-25.csv": "75794cdfb8e07781b35119a377357e3b2f52762147dd8a01751cbdfd93226d1c",
+    "gw_2025-26.csv": "8dbbc324ea5efbdda975980ec7273b61cf785c473d37106e877af3aedc12ebef",
+    "teams_2025-26.csv": "b29df099cb0ad25413e284e53116099b0e0496874f99743dbc0870d8241b46c5",
+    "players_2025-26.csv": "3098429b72b1d320c0f73db63edb912364ffe953f348fdb4faf43efe718dc551",
+    "gw_2026-27.csv": "3cfa4189ddf9ffc90f98c8bc34a7493a3d8a89d0cae2600a955ecb8190a15c22",
+    "teams_2627.csv": "55ac863d8d5992701b8b31dd218e8691720ede95ff7718c30b966c7ba9e8bd87",
+    "players_2627.csv": "1863826d48b7bf48c8e2f59ce61a0df3631522fbbfbc04dc9afd296e7c6ba0c1"
+  },
+  "code_sha256": {
+    "evaluate_strategy_models.py": "11c72a6700dcacc06a69d7bd43c03cfe6baa73edb81c5b71929e30615192bd2c",
+    "fpl_features.py": "e904ecd43cad98e6a21a6700507bd65ee8f7987d9a472df34d4f83f73f3fcd62",
+    "fpl_model.py": "fdbb7cbf40d6f5a933c29596b55077ee36c0f563d312c171905b156202049138",
+    "minutes_model.py": "f770c197e9601932d88c0f53216b4e24b62563bac4f8055fa1a7b94271bb1e92"
+  }
+}

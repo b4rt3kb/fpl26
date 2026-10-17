@@ -3,8 +3,8 @@
 python predict_gw.py --gw 7 --horizon 6 --no-squad
 
 Exports a plain all_players_gwN.csv plus JSON provenance. Blank GWs are explicit
-zero rows. Current prices, clubs and injury statuses are held fixed throughout
-the horizon: there is no injury return-date or future transfer/price model.
+zero rows. Prices/clubs stay fixed; minutes and news availability are estimated
+separately for each dated fixture. Forecasts are archived for forward evaluation.
 """
 import argparse
 from datetime import datetime, timezone
@@ -17,6 +17,8 @@ import pandas as pd
 from fpl_features import build_season, pick_squad, season_agg
 from fpl_model import PointsModel
 from fetch_fpl import validate_data_manifest
+from minutes_model import MinutesModel
+from availability_model import apply_fixture_availability
 
 ELEM = {1: "GK", 2: "DEF", 3: "MID", 4: "FWD"}
 
@@ -35,16 +37,6 @@ def historical_seasons(manifest, current_year):
             if f"{prefix}_{season}.csv" not in files:
                 raise ValueError(f"Historical input not covered by manifest: {prefix}_{season}.csv")
     return seasons
-
-
-def availability(players):
-    """Conservative snapshot assumption, held fixed; no return-date inference."""
-    result = pd.Series(1.0, index=players.index)
-    result.loc[players.status.isin(["i", "s", "u", "n"])] = 0.0
-    doubt = players.status.eq("d")
-    chance = pd.to_numeric(players.chance_of_playing_next_round, errors="coerce")
-    result.loc[doubt] = chance.loc[doubt].fillna(50).clip(0, 100) / 100
-    return result
 
 
 def future_rows(players, teams, fixtures, gameweeks):
@@ -85,14 +77,29 @@ def complete_pool(players, teams, forecast_rows, gameweeks, cutoff):
     base["pos"] = base.element_type.map(ELEM)
     base["price"] = base.now_cost / 10
     base["can_select"] = players["can_select"].to_numpy() if "can_select" in players else ~players.status.isin(["u", "n"]).to_numpy()
-    base["availability_factor"] = availability(players).to_numpy()
     base = base.drop(columns=["element_type", "now_cost"])
     grid = base.merge(pd.DataFrame({"gw": list(gameweeks)}), how="cross")
     grid = grid.merge(aggregated, on=["element", "gw"], how="left", validate="one_to_one")
-    grid["pred"] = grid.pred.fillna(0) * grid.availability_factor
+    grid["pred"] = grid.pred.fillna(0)
+    # Fixture-level adjustment has already happened. Never apply news twice.
+    if len(forecast_rows) and "expected_minutes" in forecast_rows:
+        summary = forecast_rows.groupby(["element", "gw"]).agg(
+            expected_minutes=("expected_minutes", "sum"),
+            p_no_appearance=("p_no_appearance", "prod"),
+            p_60_at_least_one_fixture=("p_60_plus", lambda p: 1-np.prod(1-p)),
+            expected_starts=("p_start", lambda p: p.sum(min_count=1)),
+            availability_factor=("availability_factor", "mean"),
+            lead_out_of_support=("lead_out_of_support", "any")).reset_index()
+        grid=grid.merge(summary,on=["element","gw"],how="left",validate="one_to_one")
+        for c in ("expected_minutes", "p_60_at_least_one_fixture", "availability_factor"):
+            grid[c]=grid[c].fillna(0)
+        grid.loc[grid.fixture_count.isna() | grid.fixture_count.eq(0),"expected_starts"]=0.
+        grid["p_no_appearance"]=grid.p_no_appearance.fillna(1)
+        grid["lead_out_of_support"]=grid.lead_out_of_support.astype("boolean").fillna(False).astype(bool)
+        grid["p_appearance"]=1-grid.p_no_appearance
     grid["fixture_count"] = grid.fixture_count.fillna(0).astype(int)
     grid["history_cutoff"] = pd.Timestamp(cutoff).isoformat()
-    grid["availability_assumption"] = "current_status_held_fixed_no_return_date_model"
+    grid["availability_assumption"] = "fixture_news_cap_on_learned_appearance_probability"
     if not np.isfinite(grid.pred).all() or grid.duplicated(["element", "gw"]).any():
         raise ValueError("Invalid forecast output")
     return grid.sort_values(["gw", "element"]).reset_index(drop=True)
@@ -102,7 +109,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--gw", type=int)
     parser.add_argument("--horizon", type=int, default=1)
-    parser.add_argument("--model", choices=["hgb", "two"], default="hgb")
+    parser.add_argument("--model", choices=["hgb", "two", "minutes", "ensemble"], default="ensemble")
+    parser.add_argument("--availability-policy", choices=["low","base","high"], default="base")
+    parser.add_argument("--availability-overrides", type=Path, help="Auditable JSON list of dated availability overrides")
+    parser.add_argument("--no-archive", action="store_true", help="Skip immutable forward-test snapshot (research only)")
+    parser.add_argument("--if-upcoming",action="store_true",help="Exit successfully when the season has no future deadline")
     parser.add_argument("--season", help="Defaults to the validated manifest season")
     parser.add_argument("--data-dir", type=Path, default=Path("."))
     parser.add_argument("--output", type=Path, help="Full-pool CSV destination; JSON metadata beside it")
@@ -128,13 +139,15 @@ def main():
     now = pd.to_datetime(datetime.now(timezone.utc).isoformat(), utc=True)
     upcoming = [gw for gw, deadline in deadlines.items() if pd.to_datetime(deadline, utc=True) > now]
     if not upcoming:
+        if args.if_upcoming:
+            print("No future gameweek; no forecast published.")
+            return
         raise ValueError("No gameweek with a future deadline")
     gw = args.gw if args.gw is not None else min(upcoming)
     if gw not in deadlines or pd.to_datetime(deadlines[gw], utc=True) <= now:
         raise ValueError("Choose a GW with a future deadline; current prices/status cannot replay historical deadlines")
     gameweeks = list(range(gw, min(gw + args.horizon, max(deadlines) + 1)))
-    if len(gameweeks) != args.horizon:
-        raise ValueError("Requested horizon extends beyond the season")
+    # The final weeks have a shorter remaining horizon, not invented GW39+.
     cutoff = min(now, pd.to_datetime(deadlines[gw], utc=True))
     year = int(args.season.split("-")[0])
     suffix = f"{year % 100:02}{(year + 1) % 100:02}"
@@ -142,13 +155,16 @@ def main():
     targets = future_rows(players, teams, fixtures, gameweeks)
 
     history = []
+    horizon_history = []
     aggregates = {}
     for season in historical_seasons(manifest, year):
         old_year = int(season[:4])
         path = data / f"gw_{season}.csv"
         previous = aggregates.get(old_year - 1)
-        history.append(build_season(path, data / f"teams_{season}.csv", previous,
-                                    season_start=old_year))
+        old_rows=build_season(path, data / f"teams_{season}.csv", previous, season_start=old_year)
+        history.append(old_rows)
+        from evaluate_strategy_models import horizon_training
+        horizon_history.append(horizon_training(data,season,previous,old_rows))
         aggregates[old_year] = season_agg(path)
     current_path = data / f"gw_{args.season}.csv"
     if not current_path.exists():
@@ -156,7 +172,8 @@ def main():
     current = build_season(current_path, data / f"teams_{suffix}.csv",
                            aggregates[year-1], extra_rows=targets,
                            player_map_path=data / f"players_{suffix}.csv",
-                           deadlines=deadlines, as_of=cutoff, season_start=year)
+                           deadlines=deadlines, as_of=cutoff, season_start=year,
+                           fixture_calendar=fixtures)
     completed = current[(~current._forecast) & current.total_points.notna()
                         & current.minutes.notna()
                         & (current.kickoff_time + pd.Timedelta(hours=2) <= cutoff)]
@@ -166,25 +183,62 @@ def main():
     training = training[training.total_points.notna() & training.minutes.notna()
                         & (training.kickoff_time + pd.Timedelta(hours=2) <= cutoff)]
     forecasts = current[current._forecast].copy()
-    model = PointsModel(args.model).fit(training)
-    forecasts["pred"] = model.predict(forecasts)
+    minute_training=pd.concat([training]+horizon_history,ignore_index=True)
+    if args.model in ("minutes","ensemble"):
+        model=PointsModel(args.model).fit(minute_training if args.model=="minutes" else training,
+                                        minutes_training=minute_training)
+        minutes=model.minutes_model
+        components=model.predict_components(forecasts)
+    else:
+        model=PointsModel(args.model).fit(training)
+        minutes=MinutesModel().fit(minute_training)
+        components=minutes.predict(forecasts)
+        components["pred"]=model.predict(forecasts)
+    for col in components:
+        forecasts[col]=components[col].to_numpy()
+    overrides=json.loads(args.availability_overrides.read_text()) if args.availability_overrides else None
+    forecasts=apply_fixture_availability(forecasts,players,as_of=cutoff,next_event=gw,
+                                        overrides=overrides,policy=args.availability_policy)
     pool = complete_pool(players, teams, forecasts, gameweeks, cutoff)
     destination = args.output or Path("predictions") / f"all_players_gw{gw}.csv"
     destination.parent.mkdir(parents=True, exist_ok=True)
     pool.to_csv(destination, index=False, float_format="%.6f")
+    fixture_path=destination.with_name(destination.stem+"_fixtures.csv")
+    fixture_columns=[c for c in ["element","key","gw","fixture","kickoff_time","feature_cutoff",
+        "pred","raw_pred","expected_minutes","raw_expected_minutes","p_no_appearance","p_1_59",
+        "p_60_plus","p_start","availability_factor","availability_source","availability_return_date",
+        "availability_assumption","lead_out_of_support"] if c in forecasts]
+    fixture_columns=list(dict.fromkeys(fixture_columns + [c for c in forecasts if
+                         c.startswith(("availability_","raw_","points_given_")) or c in components.columns]))
+    forecasts[fixture_columns].to_csv(fixture_path,index=False,float_format="%.6f")
     metadata = {"generated_utc": datetime.now(timezone.utc).isoformat(),
                 "data_manifest": manifest,
-                "model": f"v0.4-{args.model}", "season": args.season,
+                "model": f"v0.5-{args.model}", "season": args.season,
                 "gameweeks": gameweeks, "history_cutoff": cutoff.isoformat(),
                 "training_rows": len(training), "current_history_rows": len(completed),
                 "current_history_latest_gw": int(completed.gw.max()) if len(completed) else None,
                 "stable_code_coverage_training": float(training.code.notna().mean()),
                 "stable_code_coverage_current": float(players.code.notna().mean()),
-                "availability_assumption": "Current injury/status/chance held fixed across horizon; no return-date model.",
+                "minutes_model": minutes.diagnostics_,
+                "minutes_training_rows":len(minute_training),
+                "availability_policy":args.availability_policy,
+                "availability_overrides":overrides,
+                "availability_assumption": "Dated fixture return scenarios cap learned P(appearance); conservative fusion, not calibrated medical recovery probabilities.",
+                "dgw_probability_assumption":"No-appearance and at-least-one60 probabilities assume independent fixtures; expected minutes and points add without that assumption.",
                 "future_assumptions": "Current prices and clubs held fixed; future forecasts do not update rolling history.",
                 "historical_limitations": "Earliest kickoff proxy where event deadlines unavailable; 2h completion margin. Historical prices/status snapshots and rule-equivalent targets are not reconstructed.",
                 "historical_strength_features": "Removed due to incompatible API scales and unknown snapshot timing."}
+    coherence=forecasts.groupby(["team_id","fixture"],as_index=False).agg(
+        expected_minutes=("expected_minutes","sum"),expected_starts=("p_start",lambda p:p.sum(min_count=1)))
+    overflow=coherence[coherence.expected_minutes.gt(990+1e-6)|coherence.expected_starts.gt(11+1e-6)]
+    metadata["minutes_coherence"]={"model_scope":"marginal player probabilities; no jointly constrained team rotation model",
+        "club_fixtures_checked":len(coherence),"over_budget_club_fixtures":len(overflow),
+        "over_budget_rows":overflow.to_dict("records"),
+        "calendar_scope":"Premier League only; cup and international congestion unavailable"}
     destination.with_suffix(".json").write_text(json.dumps(metadata, indent=2) + "\n")
+    if not args.no_archive:
+        from forecast_archive import archive_forecast
+        archive_forecast(destination,data,metadata,fixture_path=fixture_path)
     print(f"Saved {len(pool)} player-GW forecasts to {destination}")
     print(f"History: {len(completed)} current-season rows; cutoff {cutoff.isoformat()}")
     if not args.no_squad:

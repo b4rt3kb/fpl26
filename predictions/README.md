@@ -1,7 +1,10 @@
-# Forecast outputs
+# Prognozy zawodników
 
-`gw2.csv` through `gw7.csv` and the two GW1 files are preserved historical outputs of the old implementation. They are not current recommendations: later forecasts used stale current-season data.
+Każda prognoza obejmuje najbliższe sześć kolejek.
 
-The repaired pipeline writes `all_players_gwN.csv` and an accompanying JSON metadata file after validating official FPL data. The CSV covers every player and gameweek in the requested horizon. It is an input to `plan_transfers.py`, not a personal transfer instruction.
+- `all_players_gwN.csv`: punkty i minuty każdego zawodnika w każdej kolejce.
+- `all_players_gwN_fixtures.csv`: prognozy dla poszczególnych meczów.
+- `all_players_gwN.json`: czas pobrania, wersja modelu i parametry.
+- `snapshots/`: dane zapisane przed deadline’em.
 
-Refresh data and predictions before planning; the full procedure and model limitations are in the root README.
+Skład i decyzje drużyny są w [`gameweeks/`](../gameweeks/).

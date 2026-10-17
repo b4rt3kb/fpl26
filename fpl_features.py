@@ -26,6 +26,56 @@ FEATS = PREV[:-1] + list(ROLL.values()) + [
     "own_att_r5", "own_def_r5", "opp_att_r5", "opp_def_r5",
     "price", "pos_code", "was_home", "gw", "scoring_era",
 ]
+# Kept separate so historical HGB/rolling baselines retain their original inputs.
+MINUTES_HISTORY = ["mins_r10", "mins_last", "mins_std_r5", "appearance_r5",
+                   "sixty_r5", "history_matches", "days_since_last_appearance"]
+MINUTES_SCHEDULE = ["forecast_lead_days", "fixtures_in_gw", "fixture_order_in_gw",
+                    "team_rest_days", "team_matches_prev7", "team_matches_next7"]
+MINUTES_FEATURES = ["prev_mins", "prev_start_share", "mins_r3", "mins_r5", "starts_r5",
+                    "price", "pos_code", "was_home", "gw"] + MINUTES_HISTORY + MINUTES_SCHEDULE
+EXTENDED_FEATURES = ["xg90_r5", "xa90_r5", "defcon_r5", "defcon_threshold_share_r5", "season_year"]
+
+
+def _schedule_features(rows, fixture_calendar=None):
+    """Read only dates and fixture identities, never outcomes or future lineups.
+
+    Supply the calendar snapshot available at the forecast origin. The archive
+    fallback has final fixture dates and therefore is not point-in-time evidence.
+    Only Premier League congestion is represented; cups/internationals are absent.
+    """
+    if fixture_calendar is None:
+        calendar = rows[["team_id", "fixture", "gw", "kickoff_time"]].drop_duplicates()
+    else:
+        required = {"id", "event", "team_h", "team_a", "kickoff_time"}
+        if required - set(fixture_calendar):
+            raise ValueError("Fixture calendar needs id/event/team_h/team_a/kickoff_time")
+        parts = []
+        for side in ("team_h", "team_a"):
+            part = fixture_calendar[[side, "id", "event", "kickoff_time"]].rename(
+                columns={side: "team_id", "id": "fixture", "event": "gw"})
+            parts.append(part)
+        calendar = pd.concat(parts, ignore_index=True).drop_duplicates()
+        calendar["kickoff_time"] = pd.to_datetime(calendar["kickoff_time"], utc=True, errors="raise")
+        calendar = calendar[calendar.kickoff_time.notna()].copy()
+    if calendar.duplicated(["team_id", "fixture"]).any():
+        raise ValueError("Conflicting fixture calendar rows")
+    calendar = calendar.sort_values(["team_id", "kickoff_time", "fixture"]).copy()
+    by_event = calendar.groupby(["team_id", "gw"])
+    calendar["fixtures_in_gw"] = by_event.fixture.transform("nunique")
+    calendar["fixture_order_in_gw"] = by_event.cumcount() + 1
+    calendar["team_rest_days"] = calendar.groupby("team_id").kickoff_time.diff().dt.total_seconds() / 86400
+    day = pd.Timedelta(days=1).value
+    for _, club in calendar.groupby("team_id"):
+        times = club.kickoff_time.astype("int64").to_numpy()
+        calendar.loc[club.index, "team_matches_prev7"] = (
+            np.searchsorted(times, times, side="left") - np.searchsorted(times, times-7*day, side="left"))
+        calendar.loc[club.index, "team_matches_next7"] = (
+            np.searchsorted(times, times+7*day, side="right") - np.searchsorted(times, times, side="right"))
+    lookup = calendar.set_index(["team_id", "fixture"])
+    keys = pd.MultiIndex.from_frame(rows[["team_id", "fixture"]])
+    if not keys.isin(lookup.index).all():
+        raise ValueError("Target fixture missing from supplied calendar")
+    return {col: lookup[col].reindex(keys).to_numpy() for col in MINUTES_SCHEDULE if col != "forecast_lead_days"}
 
 
 def norm(s):
@@ -105,10 +155,12 @@ def season_agg(gw_file, player_map_path=None):
 
 def build_season(gw_path, teams_path, prev_agg=None, extra_rows=None,
                  player_map_path=None, deadlines=None, as_of=None,
-                 season_start=None):
+                 season_start=None, fixture_calendar=None):
     """Freeze rolling inputs per event deadline; as_of freezes a forecast horizon.
 
     deadlines maps GW number to a UTC deadline. _forecast marks synthetic rows.
+    fixture_calendar optionally supplies a full origin-time fixture snapshot,
+    including matches outside the exported horizon for congestion features.
     """
     mapping = _player_map(gw_path, player_map_path)
     parts = []
@@ -135,6 +187,12 @@ def build_season(gw_path, teams_path, prev_agg=None, extra_rows=None,
     if not d["was_home"].isin([True, False, 0, 1, "True", "False"]).all():
         raise ValueError("Invalid home/away flag")
     d["was_home"] = d["was_home"].map(lambda x: x in (True, 1, "True")).astype(int)
+    for name, values in _schedule_features(d, fixture_calendar).items():
+        d[name] = values
+    d["defensive_contribution"] = pd.to_numeric(d.get("defensive_contribution", np.nan), errors="coerce")
+    thresholds = d["position"].map({"DEF": 10, "MID": 12, "FWD": 12})
+    d["_defcon_threshold"] = np.where(d.defensive_contribution.notna() & thresholds.notna(),
+                                      d.defensive_contribution.ge(thresholds).astype(float), np.nan)
     d["gf"] = np.where(d["was_home"], d["team_h_score"], d["team_a_score"])
     d["ga"] = np.where(d["was_home"], d["team_a_score"], d["team_h_score"])
     observed = d[(~d["_forecast"]) & d["total_points"].notna() & d["minutes"].notna()].copy()
@@ -144,7 +202,7 @@ def build_season(gw_path, teams_path, prev_agg=None, extra_rows=None,
     team_observed = observed.drop_duplicates(["team_id", "fixture"])
     deadlines = deadlines or {}
     frozen = pd.to_datetime(as_of, utc=True) if as_of is not None else None
-    for c in list(ROLL.values()) + ["own_att_r5", "own_def_r5", "opp_att_r5", "opp_def_r5"]:
+    for c in list(ROLL.values()) + ["own_att_r5", "own_def_r5", "opp_att_r5", "opp_def_r5"] + MINUTES_HISTORY + EXTENDED_FEATURES[:-1]:
         d[c] = np.nan
     for gw, idx in d.groupby("gw").groups.items():
         cutoff = pd.to_datetime(deadlines.get(int(gw), d.loc[idx, "kickoff_time"].min()), utc=True)
@@ -153,6 +211,27 @@ def build_season(gw_path, teams_path, prev_agg=None, extra_rows=None,
         d.loc[idx, "feature_cutoff"] = cutoff
         hist = observed[(observed["kickoff_time"] + pd.Timedelta(hours=2) <= cutoff)
                         & observed["gw"].ne(gw)]
+        recent = hist.groupby("player_key").tail(5)
+        recent_groups = recent.groupby("player_key")
+        minute_values = {
+            "mins_r10": hist.groupby("player_key").tail(10).groupby("player_key").minutes.mean(),
+            "mins_last": hist.groupby("player_key").minutes.last(),
+            "mins_std_r5": recent_groups.minutes.std(ddof=0),
+            "appearance_r5": recent.assign(appearance=recent.minutes.gt(0)).groupby("player_key").appearance.mean(),
+            "sixty_r5": recent.assign(sixty=recent.minutes.ge(60)).groupby("player_key").sixty.mean(),
+            "history_matches": hist.groupby("player_key").size(),
+            "days_since_last_appearance": (cutoff-hist[hist.minutes.gt(0)].groupby("player_key").kickoff_time.max()).dt.total_seconds()/86400,
+            "defcon_r5": recent_groups.defensive_contribution.mean(),
+            "defcon_threshold_share_r5": recent_groups._defcon_threshold.mean(),
+        }
+        # Ratio of totals, using only rows with a known source statistic. A
+        # zero-minute history or absent xG remains unknown, never fabricated zero.
+        for source, name in (("expected_goals", "xg90_r5"), ("expected_assists", "xa90_r5")):
+            known = recent[recent[source].notna()]
+            totals = known.groupby("player_key")[[source, "minutes"]].sum(min_count=1)
+            minute_values[name] = 90*totals[source]/totals.minutes.where(totals.minutes.gt(0))
+        for name, values in minute_values.items():
+            d.loc[idx, name] = d.loc[idx, "player_key"].map(values).to_numpy()
         for (source, window), feature in ROLL.items():
             values = hist.groupby("player_key").tail(window).groupby("player_key")[source].mean()
             d.loc[idx, feature] = d.loc[idx, "player_key"].map(values).to_numpy()
@@ -173,6 +252,8 @@ def build_season(gw_path, teams_path, prev_agg=None, extra_rows=None,
         match = re.search(r"(20\d{2})-\d{2}", str(gw_path or ""))
         season_start = int(match.group(1)) if match else int(d["kickoff_time"].min().year)
     d["scoring_era"] = int(season_start >= 2025)
+    d["season_year"] = season_start
+    d["forecast_lead_days"] = (d.kickoff_time-pd.to_datetime(d.feature_cutoff, utc=True)).dt.total_seconds().clip(lower=0)/86400
     d["played"] = d["minutes"].fillna(0).gt(0)
     d["played60"] = d["minutes"].fillna(0).ge(60)
     return d

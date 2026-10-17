@@ -1,29 +1,60 @@
-name: weekly-predictions
+name: weekly-gameweek-decisions
 on:
   schedule:
-    - cron: '0 6 * * 5'   # piatek 06:00 UTC
-  workflow_dispatch:       # + przycisk "Run workflow"
+    - cron: '17 * * * *'  # UTC; lightweight deadline check, no AI calls
+  workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: public-fpl-forecasts
+  cancel-in-progress: false
 jobs:
   predict:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: python -m unittest discover -s tests -v
-      - run: bash fetch_data.sh
-      - run: python predict_gw.py --horizon 6 --no-squad
-      - name: commit predictions
+      # This runs with the standard library, before any dependency install or
+      # training. Complete gameweek reports checkpoint the 24h and 2h windows.
+      - name: Check next official deadline
+        id: gate
+        run: python deadline_gate.py --decision-dir gameweeks --event-name "${{ github.event_name }}"
+      - name: Validate account configuration
+        if: steps.gate.outputs.due == 'true'
+        env:
+          FPL_ENTRY_ID: ${{ vars.FPL_ENTRY_ID }}
+        run: python -c 'import os; value=os.environ.get("FPL_ENTRY_ID", ""); assert value.isascii() and value.isdigit() and int(value)>0, "Set repository variable FPL_ENTRY_ID to a positive integer"'
+      - if: steps.gate.outputs.due == 'true'
+        run: pip install -r requirements.txt
+      - if: steps.gate.outputs.due == 'true'
+        run: python -m unittest discover -s tests -v
+      - if: steps.gate.outputs.due == 'true'
+        run: bash fetch_data.sh
+      # Raw account reconstruction/cache stays ignored. Only the authorised
+      # minimal recommendation bundle is published to one folder per gameweek.
+      - if: steps.gate.outputs.due == 'true'
+        run: python predict_gw.py --gw "${{ steps.gate.outputs.event }}" --horizon "${{ steps.gate.outputs.horizon }}" --no-squad --if-upcoming
+      - name: Write gameweek recommendation
+        if: steps.gate.outputs.due == 'true'
+        env:
+          FPL_ENTRY_ID: ${{ vars.FPL_ENTRY_ID }}
+        run: python weekly_decision.py --entry "$FPL_ENTRY_ID" --seconds 60 --publish-dir gameweeks
+      - name: Commit forecasts and gameweek report
+        if: steps.gate.outputs.due == 'true'
         run: |
           git config user.name fpl-ml
           git config user.email fpl-ml@users.noreply.github.com
-          git add predictions/
+          git add 'predictions/all_players_*.csv' 'predictions/all_players_*.json' 'predictions/snapshots/*.zip'
+          git add 'gameweeks/GW*/*.html' 'gameweeks/GW*/*.json' 'gameweeks/GW*/*.csv' 'gameweeks/GW*/*.md'
           if ! git diff --cached --quiet; then
-            git commit -m "auto: validated weekly player forecasts"
+            git commit -m "auto: forecasts and decisions for GW${{ steps.gate.outputs.event }}"
             git push
           fi
