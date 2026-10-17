@@ -1,6 +1,6 @@
-# Archiwum prognoz
+# Forecast archive
 
-Każdy ZIP zawiera dane FPL, prognozy i sumy kontrolne z jednego uruchomienia.
-Skrypt tworzy plik przed deadline’em i nie nadpisuje wcześniejszych plików.
+Each ZIP contains FPL inputs, forecasts and checksums from one run.
+The script creates each archive before the deadline and preserves earlier files.
 
-Archiwum służy do późniejszego porównania prognoz z punktami zawodników.
+Use these archives to compare forecasts with actual player points.

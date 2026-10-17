@@ -1,8 +1,8 @@
-# Testy
+# Tests
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-Testy sprawdzają dane, prognozy minut, dostępność, transfery, chipy i publikację raportów.
-Obejmują też podwójne kolejki, wolne transfery, budżet i automatyczne zmiany składu.
+Tests cover data, minutes, availability, transfers, chips and report publication.
+They include double gameweeks, free transfers, budgets and automatic substitutions.

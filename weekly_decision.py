@@ -190,19 +190,19 @@ def validate_forecast_sources(data_dir, metadata, fresh_bootstrap, fresh_fixture
 def decision_html(result, state, deadline):
     names = {p["id"]: p.get("name", str(p["id"])) for p in result["players"]}
     def labels(ids):
-        return ", ".join(escape(names.get(i, str(i))) for i in ids) or "brak"
+        return ", ".join(escape(names.get(i, str(i))) for i in ids) or "none"
     step = result["steps"][0]
     lineup = "".join(f"<li>{escape(names[i])}{' (C)' if i == step['captain'] else ' (VC)' if i == step['vice_captain'] else ''}</li>" for i in step["starting_xi"])
-    horizon = "".join(f"<tr><td>GW{s['gw']}</td><td>{escape(s['chip'] or 'zachowaj chipy')}</td><td>{labels(s['transfer_out'])}</td><td>{labels(s['transfer_in'])}</td><td>{s['hit_cost']}</td></tr>" for s in result["steps"])
-    return f"""<!doctype html><html lang="pl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Decyzja FPL GW{step['gw']}</title>
+    horizon = "".join(f"<tr><td>GW{s['gw']}</td><td>{escape(s['chip'] or 'save chips')}</td><td>{labels(s['transfer_out'])}</td><td>{labels(s['transfer_in'])}</td><td>{s['hit_cost']}</td></tr>" for s in result["steps"])
+    return f"""<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FPL decision GW{step['gw']}</title>
 <style>body{{font:17px/1.6 system-ui;max-width:940px;margin:40px auto;padding:0 24px;color:#172238}}h1,h2{{line-height:1.2}}table{{border-collapse:collapse;width:100%}}td,th{{text-align:left;padding:10px;border-bottom:1px solid #ddd}}.note{{background:#fff4d6;padding:16px}}small{{color:#526074}}</style>
-<h1>GW{step['gw']}: decyzja przed deadline’em</h1><p>Deadline: <strong>{escape(deadline)}</strong> · dostępne FT: {state['free_transfers']} · bank: £{state['bank']/10:.1f}m</p>
-<p class="note">Plan opiera się na ostatnim publicznym składzie i pełnej historii transferów. Prywatne zmiany po ostatnim deadline’ie pozostają niewidoczne. Raport niczego nie wykonuje na koncie.</p>
-<h2>Transfery i chip</h2><p><strong>Sprzedaj:</strong> {labels(step['transfer_out'])}<br><strong>Kup:</strong> {labels(step['transfer_in'])}<br><strong>Chip:</strong> {escape(step['chip'] or 'zachowaj')} · koszt: {step['hit_cost']} pkt · bank po ruchach: £{step['bank']/10:.1f}m</p>
-<h2>XI, kapitan i ławka</h2><ul>{lineup}</ul><p><strong>Ławka w kolejności:</strong> {labels(step['bench'])}</p>
-<p>Oczekiwane punkty netto z modelowanymi zastępstwami: <strong>{step.get('expected_net_points_with_contingencies', step['net_predicted_points']):.1f}</strong>. To prognoza, nie gwarancja.</p>
-<h2>Dalszy plan do ponownego przeliczenia</h2><table><tr><th>Kolejka</th><th>Chip</th><th>Sprzedaż</th><th>Zakup</th><th>Hit</th></tr>{horizon}</table>
-<p><small>Stan publiczny z GW{state['as_of_event']}; pobrano {escape(state['imported_at'])}. Każdy kolejny tydzień wymaga świeżej prognozy. Minuty i absencje zawodników nie są modelowane wspólnie dla całego klubu.</small></p></html>"""
+<h1>GW{step['gw']}: decision before the deadline</h1><p>Deadline: <strong>{escape(deadline)}</strong> · available FT: {state['free_transfers']} · bank: £{state['bank']/10:.1f}m</p>
+<p class="note">The plan uses the latest public squad and complete transfer history. Changes after the last deadline are not public. This report makes no account changes.</p>
+<h2>Transfers and chip</h2><p><strong>Sell:</strong> {labels(step['transfer_out'])}<br><strong>Buy:</strong> {labels(step['transfer_in'])}<br><strong>Chip:</strong> {escape(step['chip'] or 'save')} · cost: {step['hit_cost']} points · bank after transfers: £{step['bank']/10:.1f}m</p>
+<h2>Starting XI, captain and bench</h2><ul>{lineup}</ul><p><strong>Bench order:</strong> {labels(step['bench'])}</p>
+<p>Net points forecast with modelled substitutions: <strong>{step.get('expected_net_points_with_contingencies', step['net_predicted_points']):.1f}</strong>.</p>
+<h2>Future plan, recalculated each week</h2><table><tr><th>Gameweek</th><th>Chip</th><th>Sell</th><th>Buy</th><th>Hit</th></tr>{horizon}</table>
+<p><small>Public squad after GW{state['as_of_event']}. Fetched at {escape(state['imported_at'])}. Player appearances are modelled independently.</small></p></html>"""
 
 
 def public_recommendation(result, state, metadata):
@@ -260,6 +260,11 @@ def publish_decision(destination, result, state, metadata, now=None):
     if now >= parse_timestamp(result["deadline"]):
         raise StateValidationError("Deadline passed; refusing to publish an expired decision")
     report = public_recommendation(result, state, metadata)
+    return render_public_decision(destination, report)
+
+
+def render_public_decision(destination, report):
+    """Render an existing public decision without changing its data or timestamps."""
     target = Path(destination)/f"GW{report['gameweek']}"
     def md(value):
         return str(value).replace("|", "\\|").replace("\n", " ").replace("\r", " ")
@@ -267,25 +272,25 @@ def publish_decision(destination, result, state, metadata, now=None):
         return md(row["name"])
     moves = [f"{name(t['out'])} (£{t['out']['selling_price']:.1f}m) → {name(t['in'])} (£{t['in']['price']:.1f}m)" for t in report["transfers"]]
     labels = {"wildcard": "Wildcard", "freehit": "Free Hit", "bboost": "Bench Boost", "3xc": "Triple Captain"}
-    chip = labels.get(report["chip"], report["chip"] or "brak")
+    chip = labels.get(report["chip"], report["chip"] or "none")
     lines = [f"# GW{report['gameweek']}", "", f"**Deadline: {report['deadline_local']}.**", "",
-             "**Transfery:**", ""]
-    lines += [f"- {move}" for move in moves] if moves else ["Zachowaj skład."]
+             "**Transfers:**", ""]
+    lines += [f"- {move}" for move in moves] if moves else ["Keep the squad."]
     lines += ["",
-             f"**Chip:** {chip}. **Koszt:** {report['hit_cost']} pkt.", "",
+             f"**Chip:** {chip}. **Cost:** {report['hit_cost']} points.", "",
              f"Bank: £{report['bank_before']:.1f}m → £{report['bank_after']:.1f}m. "
-             f"FT: {report['free_transfers_before']} teraz → {report['free_transfers_next']} w następnej kolejce.", "",
-             f"**Kapitan:** {name(report['captain'])}. **Wicekapitan:** {name(report['vice_captain'])}.", "",
-             "| Pozycja | Pierwszy skład |", "|---|---|"]
+             f"FT: {report['free_transfers_before']} now → {report['free_transfers_next']} next gameweek.", "",
+             f"**Captain:** {name(report['captain'])}. **Vice-captain:** {name(report['vice_captain'])}.", "",
+             "| Position | Starting XI |", "|---|---|"]
     for row in report["starting_xi"]:
         suffix = " (C)" if row["id"] == report["captain"]["id"] else " (VC)" if row["id"] == report["vice_captain"]["id"] else ""
         lines.append(f"| {row['position']} | {name(row)}{suffix} |")
     reserve_keeper = next(p for p in report["bench"] if p["position"] == "GK")
-    lines += ["", "**Ławka:** " + ", ".join(f"{p['order']}. {name(p)}" for p in report["bench"] if p["position"] != "GK") + ".",
-              f"**Bramkarz rezerwowy:** {name(reserve_keeper)}.", "",
-              f"Prognoza netto: **{report['expected_net_points']:.1f} pkt**. Model: `{report['model']}`.", "",
-              f"Stan wejściowy: publiczny skład po GW{report['public_state_event']}. Aktualizacja: {report['generated_utc']}.", "",
-              "[Widok HTML](decision.html) · [Skład CSV](lineup.csv) · [Dane decyzji](decision.json)", ""]
+    lines += ["", "**Bench:** " + ", ".join(f"{p['order']}. {name(p)}" for p in report["bench"] if p["position"] != "GK") + ".",
+              f"**Reserve goalkeeper:** {name(reserve_keeper)}.", "",
+              f"Net points forecast: **{report['expected_net_points']:.1f}**. Model: `{report['model']}`.", "",
+              f"Input: public squad after GW{report['public_state_event']}. Updated: {report['generated_utc']}.", "",
+              "[HTML report](decision.html) · [Lineup CSV](lineup.csv) · [Decision data](decision.json)", ""]
     markdown = "\n".join(lines)
     lineup_rows = []
     for role, rows in (("XI", report["starting_xi"]), ("bench", report["bench"])):
@@ -294,16 +299,16 @@ def publish_decision(destination, result, state, metadata, now=None):
                                 "role": role, "bench_order": row.get("order", ""),
                                 "is_captain": row["id"] == report["captain"]["id"],
                                 "is_vice_captain": row["id"] == report["vice_captain"]["id"], "price": row["price"]})
-    table = "".join(f"<tr><td>{escape(r['position'])}</td><td>{escape(r['name'])}{' (C)' if r['is_captain'] else ' (VC)' if r['is_vice_captain'] else ''}</td><td>{'XI' if r['role'] == 'XI' else 'Bramkarz rezerwowy' if r['position'] == 'GK' else 'Ławka '+str(r['bench_order'])}</td></tr>" for r in lineup_rows)
-    moves_html = "<ul>" + "".join(f"<li>{escape(move)}</li>" for move in moves) + "</ul>" if moves else "<p>Zachowaj skład.</p>"
-    html = f"""<!doctype html><html lang="pl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FPL GW{report['gameweek']}</title>
+    table = "".join(f"<tr><td>{escape(r['position'])}</td><td>{escape(r['name'])}{' (C)' if r['is_captain'] else ' (VC)' if r['is_vice_captain'] else ''}</td><td>{'XI' if r['role'] == 'XI' else 'Reserve goalkeeper' if r['position'] == 'GK' else 'Bench '+str(r['bench_order'])}</td></tr>" for r in lineup_rows)
+    moves_html = "<ul>" + "".join(f"<li>{escape(move)}</li>" for move in moves) + "</ul>" if moves else "<p>Keep the squad.</p>"
+    html = f"""<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FPL GW{report['gameweek']}</title>
 <style>body{{font:17px/1.6 system-ui;max-width:820px;margin:36px auto;padding:0 24px;color:#172238}}table{{border-collapse:collapse;width:100%}}td,th{{text-align:left;padding:8px;border-bottom:1px solid #ddd}}</style>
 <h1>GW{report['gameweek']}</h1><p><strong>Deadline: {escape(report['deadline_local'])}</strong></p>
-<h2>Transfery</h2>{moves_html}<p><strong>Chip:</strong> {escape(chip)} · koszt: {report['hit_cost']} pkt.</p>
-<p>Bank: £{report['bank_before']:.1f}m → £{report['bank_after']:.1f}m. FT: {report['free_transfers_before']} teraz → {report['free_transfers_next']} w następnej kolejce.</p>
-<p><strong>Kapitan:</strong> {escape(report['captain']['name'])}. <strong>Wicekapitan:</strong> {escape(report['vice_captain']['name'])}.</p>
-<table><tr><th>Pozycja</th><th>Zawodnik</th><th>Skład</th></tr>{table}</table><p>Prognoza netto: <strong>{report['expected_net_points']:.1f} pkt</strong>. Model: {escape(report['model'])}.</p>
-<p>Stan wejściowy: publiczny skład po GW{report['public_state_event']}. Aktualizacja: {escape(report['generated_utc'])}.</p></html>"""
+<h2>Transfers</h2>{moves_html}<p><strong>Chip:</strong> {escape(chip)} · cost: {report['hit_cost']} points.</p>
+<p>Bank: £{report['bank_before']:.1f}m → £{report['bank_after']:.1f}m. FT: {report['free_transfers_before']} now → {report['free_transfers_next']} next gameweek.</p>
+<p><strong>Captain:</strong> {escape(report['captain']['name'])}. <strong>Vice-captain:</strong> {escape(report['vice_captain']['name'])}.</p>
+<table><tr><th>Position</th><th>Player</th><th>Lineup</th></tr>{table}</table><p>Net points forecast: <strong>{report['expected_net_points']:.1f}</strong>. Model: {escape(report['model'])}.</p>
+<p>Input: public squad after GW{report['public_state_event']}. Updated: {escape(report['generated_utc'])}.</p></html>"""
     # Publish the checkpoint last, after every companion file is complete.
     atomic_write(target/"decision.html", html.encode())
     atomic_write(target/"lineup.csv", pd.DataFrame(lineup_rows).to_csv(index=False).encode())

@@ -1,10 +1,10 @@
-# Prognozy zawodników
+# Player forecasts
 
-Każda prognoza obejmuje najbliższe sześć kolejek.
+Each forecast covers up to six gameweeks.
 
-- `all_players_gwN.csv`: punkty i minuty każdego zawodnika w każdej kolejce.
-- `all_players_gwN_fixtures.csv`: prognozy dla poszczególnych meczów.
-- `all_players_gwN.json`: czas pobrania, wersja modelu i parametry.
-- `snapshots/`: dane zapisane przed deadline’em.
+- `all_players_gwN.csv`: points and minutes for each player and gameweek.
+- `all_players_gwN_fixtures.csv`: forecasts for individual matches.
+- `all_players_gwN.json`: data timestamp, model version and parameters.
+- `snapshots/`: data saved before the deadline.
 
-Skład i decyzje drużyny są w [`gameweeks/`](../gameweeks/).
+Team decisions are in [`gameweeks/`](../gameweeks/).

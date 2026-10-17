@@ -1,6 +1,6 @@
-# Dane wejściowe
+# Input data
 
-`fetch_fpl.py` pobiera bieżący sezon z API FPL i wcześniejsze sezony z archiwum vaastav.
-Skrypt sprawdza zawodników, mecze, punkty i sumy kontrolne.
+`fetch_fpl.py` downloads the current season from the FPL API and previous seasons from the vaastav archive.
+The script checks players, matches, points and checksums.
 
-Pobrane pliki i pamięć podręczna pozostają lokalnie. Git nie zapisuje pełnej historii konta.
+Downloaded files and caches stay local. Git excludes the full account history.

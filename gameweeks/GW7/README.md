@@ -2,19 +2,19 @@
 
 **Deadline: 2026-10-17 12:00 CEST.**
 
-**Transfery:**
+**Transfers:**
 
 - Virgil (£6.5m) → Van Hecke (£4.9m)
 - Cherki (£7.8m) → Semenyo (£8.3m)
 - Enciso (£5.5m) → Anderson (£6.3m)
 
-**Chip:** brak. **Koszt:** 0 pkt.
+**Chip:** none. **Cost:** 0 points.
 
-Bank: £0.4m → £0.7m. FT: 3 teraz → 1 w następnej kolejce.
+Bank: £0.4m → £0.7m. FT: 3 now → 1 next gameweek.
 
-**Kapitan:** Haaland. **Wicekapitan:** Semenyo.
+**Captain:** Haaland. **Vice-captain:** Semenyo.
 
-| Pozycja | Pierwszy skład |
+| Position | Starting XI |
 |---|---|
 | GK | Raya |
 | DEF | Calafiori |
@@ -28,11 +28,11 @@ Bank: £0.4m → £0.7m. FT: 3 teraz → 1 w następnej kolejce.
 | MID | Semenyo (VC) |
 | FWD | Haaland (C) |
 
-**Ławka:** 1. Wharton, 2. Kusi-Asare, 3. Walle Egeli.
-**Bramkarz rezerwowy:** Leno.
+**Bench:** 1. Wharton, 2. Kusi-Asare, 3. Walle Egeli.
+**Reserve goalkeeper:** Leno.
 
-Prognoza netto: **58.5 pkt**. Model: `v0.5-ensemble`.
+Net points forecast: **58.5**. Model: `v0.5-ensemble`.
 
-Stan wejściowy: publiczny skład po GW6. Aktualizacja: 2026-10-17T09:40:23.241774+00:00.
+Input: public squad after GW6. Updated: 2026-10-17T09:40:23.241774+00:00.
 
-[Widok HTML](decision.html) · [Skład CSV](lineup.csv) · [Dane decyzji](decision.json)
+[HTML report](decision.html) · [Lineup CSV](lineup.csv) · [Decision data](decision.json)

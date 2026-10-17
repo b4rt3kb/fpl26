@@ -1,11 +1,11 @@
-# Decyzje na kolejki
+# Gameweek decisions
 
-Otwórz folder wybranej kolejki, np. [`GW7/`](GW7/).
+Open the required gameweek folder, such as [`GW7/`](GW7/).
 
-- `README.md`: skład, kapitan, ławka, transfery, chip, bank i wolne transfery.
-- `decision.html`: raport do otwarcia w przeglądarce.
-- `decision.json`: decyzja do odczytu przez skrypt.
-- `lineup.csv`: skład w tabeli.
+- `README.md`: lineup, captain, bench, transfers, chip, bank and free transfers.
+- `decision.html`: report for a web browser.
+- `decision.json`: decision data for scripts.
+- `lineup.csv`: squad table.
 
-Python odświeża raport przed deadline’em. Kolejne kolejki otrzymują nowe foldery.
-`history.csv` zawiera oficjalne punkty drużyny z GW1–GW6.
+Python refreshes the report before the deadline. Each new gameweek gets a separate folder.
+`history.csv` contains the team's official points from GW1–GW6.

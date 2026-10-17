@@ -1,35 +1,35 @@
-# Model i planowanie
+# Model and planner
 
-Model łączy dwie prognozy punktów w proporcji 50/50: bezpośredni model drzew oraz model oparty na minutach.
-Używa formy, startów, xG, xA, działań defensywnych, ceny, rywala i terminarza.
+The model combines two point forecasts with equal weights: direct gradient boosting and a model based on minutes.
+Inputs include form, starts, expected goals (xG), expected assists (xA), defensive actions, price, opponent strength and fixtures.
 
-Model minut oblicza szanse braku występu, gry przez 1–59 minut oraz gry przez co najmniej 60 minut.
-Kalibracja używa późniejszych meczów niż trening. Prognozy minut powstają osobno dla każdego zawodnika.
-Status i komunikaty FPL korygują dostępność na datę każdego meczu, w tym przewidywany powrót po kontuzji.
+The minutes model estimates three outcomes: no appearance, 1–59 minutes and at least 60 minutes.
+Calibration uses later matches than training. Each player has a separate minutes forecast.
+FPL status and news adjust availability for each match date, including expected injury returns.
 
-Każda prognoza obejmuje sześć kolejek i używa danych dostępnych w chwili obliczenia.
-Podwójna kolejka sumuje punkty obu meczów. Kolejka bez meczu daje zero punktów.
+Each forecast covers up to six gameweeks with data available at the calculation time.
+Double gameweeks sum both matches. Blank gameweeks contribute zero points.
 
-## Planer
+## Planner
 
-HiGHS wybiera transfery, jedenastkę, kapitana i chipy dla całego okresu.
-Sprawdza budżet, ceny sprzedaży, limit klubu, formację, wolne transfery oraz koszt dodatkowych transferów.
-Wildcard zmienia skład na stałe. Free Hit przywraca poprzedni skład po kolejce.
-Bench Boost uwzględnia ławkę. Triple Captain potraja punkty kapitana.
-Osobny krok poprawia ławkę i C/VC, uwzględniając prawdopodobieństwo automatycznych zmian.
+HiGHS selects transfers, the starting lineup, captain and chips across the forecast period.
+It checks the budget, sale prices, club limits, formation, free transfers and transfer hits.
+Wildcard changes the permanent squad. Free Hit restores the previous squad after the gameweek.
+Bench Boost includes bench points. Triple Captain triples captain points.
+A separate step improves the lineup, bench order and C/VC choices with expected automatic substitutions.
 
-Planer zachowuje bieżące ceny przez sześć kolejek.
-Jeżeli chip pozostaje dostępny poza planem, planer odlicza od jego użycia rezerwę punktów: WC 25, FH 20, BB 18, TC 12.
-Rezerwa wynosi zero, gdy chip wygasa w planowanym okresie.
+The planner holds current prices constant across the forecast period.
+If a chip remains available beyond this period, its use incurs a reserve cost: WC 25, FH 20, BB 18, TC 12 points.
+The reserve is zero when the chip expires within the forecast period.
 
-## Wyniki prognoz
+## Forecast results
 
-Błąd RMSE punktów dla całej puli zawodników. Mniejsza wartość oznacza mniejszy błąd.
+Root mean square error (RMSE) of points across all players. Lower values indicate smaller errors.
 
-| Okres | Model bezpośredni | Model 50/50 |
+| Period | Direct model | Combined model |
 |---|---:|---:|
-| 2025/26, 38 kolejek | 1,949 | 1,930 |
-| 2026/27, GW1–GW6 | 2,203 | 2,194 |
+| 2025/26, 38 gameweeks | 1.949 | 1.930 |
+| 2026/27, GW1–GW6 | 2.203 | 2.194 |
 
-Test odtwarza kolejne momenty decyzji na danych historycznych. Sezon 2025/26 służył także do rozwoju modelu.
-Parametry, pozostałe miary i wyniki minut są w [`evaluation/`](evaluation/).
+The evaluation reconstructs successive decisions from historical data. The 2025/26 season also informed model development.
+See [`evaluation/`](evaluation/) for parameters, other metrics and minutes results.

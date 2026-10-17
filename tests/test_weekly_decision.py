@@ -11,7 +11,7 @@ from team_state import StateValidationError
 from weekly_decision import (reconstructed_free_transfers, fetch_public_state,
                              next_deadline, validate_forecast_for_decision,
                              validate_current_inputs, validate_fixture_schedule,
-                             validate_forecast_sources, publish_decision)
+                             validate_forecast_sources, publish_decision, render_public_decision)
 from test_team_state import sample_account
 
 
@@ -152,6 +152,10 @@ class WeeklyDecisionTests(unittest.TestCase):
             self.assertEqual(report["deadline_local"], "2026-10-17 12:00 CEST")
             self.assertEqual(report["transfers"][0]["out"]["selling_price"], 5.2)
             self.assertEqual(report["transfers"][0]["in"]["price"], 5.4)
+            self.assertEqual([p["order"] for p in report["bench"]], [0, 1, 2, 3])
+            position_order = {"GK": 0, "DEF": 1, "MID": 2, "FWD": 3}
+            order = [position_order[p["position"]] for p in report["starting_xi"]]
+            self.assertEqual(order, sorted(order))
             for path in target.iterdir():
                 self.assertNotIn("SECRET_", path.read_text())
                 self.assertNotIn("entry_id", path.read_text())
@@ -160,7 +164,12 @@ class WeeklyDecisionTests(unittest.TestCase):
             self.assertEqual(rows.element.nunique(), 15)
             self.assertEqual(int(rows.is_captain.sum()), 1)
             self.assertEqual(int(rows.is_vice_captain.sum()), 1)
-            self.assertIn("Kapitan", (target/"README.md").read_text())
+            self.assertIn("Captain", (target/"README.md").read_text())
+            original_data = deepcopy(report)
+            render_public_decision(tmp, report)
+            self.assertEqual(report, original_data)
+            self.assertEqual(json.loads((target/"decision.json").read_text()), original_data)
+            self.assertIn('lang="en"', (target/"decision.html").read_text())
             with self.assertRaisesRegex(StateValidationError, "Deadline passed"):
                 publish_decision(tmp, result, state, metadata, now=pd.Timestamp("2026-10-17T10:00:00Z"))
 
