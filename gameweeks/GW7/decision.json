@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_utc": "2026-10-17T09:35:05.076814+00:00",
+  "generated_utc": "2026-10-17T09:40:23.241774+00:00",
   "season": "2026-27",
   "gameweek": 7,
   "gameweeks": [
@@ -14,9 +14,9 @@
   "deadline": "2026-10-17T10:00:00Z",
   "deadline_local": "2026-10-17 12:00 CEST",
   "model": "v0.5-ensemble",
-  "forecast_generated_utc": "2026-10-17T09:30:19.160580+00:00",
+  "forecast_generated_utc": "2026-10-17T09:39:52.407597+00:00",
   "public_state_event": 6,
-  "public_state_fetched_utc": "2026-10-17T09:34:42.211313+00:00",
+  "public_state_fetched_utc": "2026-10-17T09:39:53.163013+00:00",
   "transfers": [
     {
       "out": {
@@ -180,5 +180,5 @@
       "order": 3
     }
   ],
-  "expected_net_points": 58.44
+  "expected_net_points": 58.45
 }

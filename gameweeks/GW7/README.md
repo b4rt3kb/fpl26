@@ -31,8 +31,8 @@ Bank: £0.4m → £0.7m. FT: 3 teraz → 1 w następnej kolejce.
 **Ławka:** 1. Wharton, 2. Kusi-Asare, 3. Walle Egeli.
 **Bramkarz rezerwowy:** Leno.
 
-Prognoza netto: **58.4 pkt**. Model: `v0.5-ensemble`.
+Prognoza netto: **58.5 pkt**. Model: `v0.5-ensemble`.
 
-Stan wejściowy: publiczny skład po GW6. Aktualizacja: 2026-10-17T09:35:05.076814+00:00.
+Stan wejściowy: publiczny skład po GW6. Aktualizacja: 2026-10-17T09:40:23.241774+00:00.
 
 [Widok HTML](decision.html) · [Skład CSV](lineup.csv) · [Dane decyzji](decision.json)
