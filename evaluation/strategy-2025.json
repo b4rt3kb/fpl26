@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "season": "2025-26",
+  "gameweeks": 38,
+  "score_unit": "FPL points net of transfer hits",
+  "score_is_user_account": false,
+  "study_design": "Retrospective stateful replay in a reconstructed historical market on a development season; not an untouched or fully point-in-time test.",
+  "common_initial_state": {
+    "path": "initial-state.json",
+    "players": 15,
+    "budget_tenths": 1000,
+    "bank_tenths": 0,
+    "selected_by": "HGB GW1 forecasts, before observed outcomes",
+    "gw1_transfers_and_chips_disabled": true
+  },
+  "input_manifest": "inputs-manifest.json",
+  "runtime_environment": {
+    "python": "3.9.6 (default, May 22 2026, 11:13:45) \n[Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "packages": {
+      "numpy": "2.0.2",
+      "pandas": "2.3.3",
+      "scipy": "1.13.1",
+      "scikit-learn": "1.6.1",
+      "highspy": "1.15.1"
+    },
+    "max_parallel_replays": 2,
+    "threads_per_process": 2
+  },
+  "sources": [
+    {
+      "kind": "historical player-fixture data",
+      "url": "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2025-26/gws/merged_gw.csv"
+    },
+    {
+      "kind": "historical stable player codes",
+      "url": "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2025-26/players_raw.csv"
+    },
+    {
+      "kind": "official game rules",
+      "url": "https://fantasy.premierleague.com/help/rules"
+    },
+    {
+      "kind": "official 2025/26 GW16 free-transfer override",
+      "url": "https://www.premierleague.com/en/news/4362102/whats-new-in-202526-fantasy-extra-transfers-for-afcon"
+    }
+  ],
+  "forecast_rules": {
+    "horizon": 6,
+    "history": "origin-frozen",
+    "future_prices": "constant inside each origin; refreshed at next origin",
+    "models": "HGB, minutes model and predeclared 50/50 ensemble; historical no-appearance estimates shared across point models"
+  },
+  "game_rules": {
+    "max_free_transfers": 5,
+    "transfer_hit": 4,
+    "free_transfer_overrides": {
+      "16": 5
+    },
+    "chip_windows": [
+      [
+        1,
+        19
+      ],
+      [
+        20,
+        38
+      ]
+    ],
+    "realized_scoring": "legal XI, ordered autosubs, captain/vice fallback, DGWs, blanks, BB and TC; FH restores permanent holdings/purchase prices/bank/FT"
+  },
+  "solver_budget": {
+    "seconds_per_stage": 10,
+    "no_chips_max_seconds_per_origin": 10,
+    "chips_max_seconds_per_origin": 20,
+    "chips_stages": [
+      "no-chip baseline",
+      "joint search with scoring-chip seed"
+    ],
+    "max_parallel_replays": 2,
+    "threads_per_process": 2,
+    "gap_note": "Per-origin optimization gaps for the deterministic objective, not forecast uncertainty or a bound for whole-season realized points."
+  },
+  "runs": [
+    {
+      "key": "hgb_no_transfer",
+      "label": "HGB: no transfers and no chips",
+      "planner_version": "no transfer decisions",
+      "decision_kind": "no_transfer",
+      "raw_net_points": 1475.0,
+      "refined_net_points": 1477.0,
+      "realized_refinement_gain": 2.0,
+      "hit_points": 0,
+      "permanent_transfers": 0,
+      "chips_used": [],
+      "max_origin_mip_gap_fraction": null,
+      "mean_origin_mip_gap_fraction": null,
+      "origins_outside_solver_tolerance": [],
+      "total_wall_seconds": 17.912076708,
+      "raw_evidence": "hgb_no_transfer.json",
+      "refined_evidence": "hgb_no_transfer_refined.json",
+      "source_hashes": null
+    },
+    {
+      "key": "hgb_no_chips",
+      "label": "HGB: transfers, no chips",
+      "planner_version": "final scoring-chip seed revision",
+      "decision_kind": "no_chips",
+      "raw_net_points": 2082.0,
+      "refined_net_points": 2080.0,
+      "realized_refinement_gain": -2.0,
+      "hit_points": 84,
+      "permanent_transfers": 61,
+      "chips_used": [],
+      "max_origin_mip_gap_fraction": 0.10910708292774915,
+      "mean_origin_mip_gap_fraction": 0.005561953916215012,
+      "origins_outside_solver_tolerance": [
+        2,
+        22,
+        28
+      ],
+      "total_wall_seconds": 249.11378620899998,
+      "raw_evidence": "solver-10s-nochips/hgb_raw.json",
+      "refined_evidence": "solver-10s-nochips/hgb_refined.json",
+      "source_hashes": {
+        "strategy_backtest.py": "4aa6b3ca4da7c34d18eeed1fa69e3441a22fb637b1848c69094765885d770126",
+        "plan_transfers.py": "950baebfcee108868dad62ccb1c8d6818fa1e88921cdfe7b2e2fad242c6b82be",
+        "planner_candidates.py": "8ca7c752dd4111abfda97b7a042675878cf68b6f4c8488020d32268b70abf7f2",
+        "lineup_uncertainty.py": "e616dad492ac3d777c9b2619dd2d9932f37088ae0a4e5efaa8056b69a510eb75"
+      }
+    },
+    {
+      "key": "ensemble_no_chips",
+      "label": "Ensemble: transfers, no chips",
+      "planner_version": "final scoring-chip seed revision",
+      "decision_kind": "no_chips",
+      "raw_net_points": 2057.0,
+      "refined_net_points": 2062.0,
+      "realized_refinement_gain": 5.0,
+      "hit_points": 56,
+      "permanent_transfers": 53,
+      "chips_used": [],
+      "max_origin_mip_gap_fraction": 0.007361168351744737,
+      "mean_origin_mip_gap_fraction": 0.0028487038903180135,
+      "origins_outside_solver_tolerance": [
+        8,
+        9,
+        10,
+        13,
+        18,
+        19,
+        22
+      ],
+      "total_wall_seconds": 261.72415062500005,
+      "raw_evidence": "solver-10s-ensemble-nochips/ensemble_raw.json",
+      "refined_evidence": "solver-10s-ensemble-nochips/ensemble_refined.json",
+      "source_hashes": {
+        "strategy_backtest.py": "4aa6b3ca4da7c34d18eeed1fa69e3441a22fb637b1848c69094765885d770126",
+        "plan_transfers.py": "950baebfcee108868dad62ccb1c8d6818fa1e88921cdfe7b2e2fad242c6b82be",
+        "planner_candidates.py": "8ca7c752dd4111abfda97b7a042675878cf68b6f4c8488020d32268b70abf7f2",
+        "lineup_uncertainty.py": "e616dad492ac3d777c9b2619dd2d9932f37088ae0a4e5efaa8056b69a510eb75"
+      }
+    },
+    {
+      "key": "ensemble_chips",
+      "label": "Ensemble: transfers and chips",
+      "planner_version": "final scoring-chip seed revision",
+      "decision_kind": "planner",
+      "raw_net_points": 1990.0,
+      "refined_net_points": 1985.0,
+      "realized_refinement_gain": -5.0,
+      "hit_points": 76,
+      "permanent_transfers": 66,
+      "chips_used": [
+        {
+          "name": "3xc",
+          "event": 14
+        },
+        {
+          "name": "bboost",
+          "event": 15
+        },
+        {
+          "name": "bboost",
+          "event": 33
+        },
+        {
+          "name": "freehit",
+          "event": 36
+        },
+        {
+          "name": "wildcard",
+          "event": 37
+        },
+        {
+          "name": "3xc",
+          "event": 38
+        }
+      ],
+      "max_origin_mip_gap_fraction": 0.2124419035171261,
+      "mean_origin_mip_gap_fraction": 0.039840007064394764,
+      "origins_outside_solver_tolerance": [
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        9,
+        12,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        22,
+        23,
+        24,
+        25,
+        26,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "total_wall_seconds": 609.246026459,
+      "raw_evidence": "solver-10s-final/ensemble_raw.json",
+      "refined_evidence": "solver-10s-final/ensemble_refined.json",
+      "source_hashes": {
+        "strategy_backtest.py": "4aa6b3ca4da7c34d18eeed1fa69e3441a22fb637b1848c69094765885d770126",
+        "plan_transfers.py": "950baebfcee108868dad62ccb1c8d6818fa1e88921cdfe7b2e2fad242c6b82be",
+        "planner_candidates.py": "8ca7c752dd4111abfda97b7a042675878cf68b6f4c8488020d32268b70abf7f2",
+        "lineup_uncertainty.py": "e616dad492ac3d777c9b2619dd2d9932f37088ae0a4e5efaa8056b69a510eb75"
+      }
+    }
+  ],
+  "same_model_chip_policy_difference": {
+    "ensemble_raw_net_points": -67.0,
+    "ensemble_refined_net_points": -77.0
+  },
+  "acquisitions_with_fixture_but_no_origin_archive_row": {
+    "hgb_no_transfer": [],
+    "hgb_no_chips": [],
+    "ensemble_no_chips": [],
+    "ensemble_chips": []
+  },
+  "historical_pool_check_note": "Absence would suggest stale pool or missing archive data, not establish actual ineligibility. A clean check does not replace archived deadline status/pool snapshots.",
+  "limitations": [
+    "Final historical fixture calendar is known ex post. Actual deadline knowledge of future rescheduling and historical availability/status snapshots is unavailable.",
+    "Prices and candidate pools are reconstructed from archives; this is not a full historical recreation of the information available to a manager.",
+    "The development season has already been inspected. No claim of SOTA, general superiority, or prospective profit is supported by one simulated season.",
+    "The planner uses heuristic chip reserves, frozen future prices and a finite horizon. Time-limited incumbent solutions may remain suboptimal.",
+    "Lineup refinement assumes independent appearance probabilities and zero points on no appearance, searches limited XI swaps, and optimizes bench/C/VC under those assumptions. It is not a joint global uncertain transfer solution.",
+    "Refined and raw scores share exactly the same transfer paths, chip dates, financial ledger and final state. Negative realized refinement gains are retained.",
+    "The final same-model comparison changes chip permission as a policy; it does not isolate chip points causally because transfer paths can differ.",
+    "The HGB-built common starting squad is shared by all variants. GW1 allows neither transfers nor a chip.",
+    "Earlier 3-second joint runs were weak incumbents; the rolling10 joint run stopped at GW23 before the grandfather-club fix and has no complete season score."
+  ],
+  "evidence_archive": {
+    "file": "strategy-2025-evidence.zip",
+    "sha256": "37e0f834c5c4fe1ef66d84119ced36f64309b79fcf963a0a3f958bdc95227c75",
+    "references": "Evidence paths, the initial state and input manifest refer to members of this archive."
+  }
+}

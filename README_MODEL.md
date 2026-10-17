@@ -33,3 +33,5 @@ Root mean square error (RMSE) of points across all players. Lower values indicat
 
 The evaluation reconstructs successive decisions from historical data. The 2025/26 season also informed model development.
 See [`evaluation/`](evaluation/) for parameters, other metrics and minutes results.
+
+The 2025/26 strategy replay scored 1,985 points with chips and 2,062 without chips, after transfer hits and lineup refinement.
