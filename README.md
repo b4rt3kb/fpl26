@@ -1,84 +1,71 @@
-# fpl-ml ⚽ — ML predictions + LP optimization, playing FPL live
+# fpl26 — forecasts and a stateful FPL planner
 
-A Fantasy Premier League bot running a **live, public experiment**: a real FPL team managed 100% by the model for the 2026/27 season, entered before the Gameweek 1 deadline on day one of the season. Results logged in [`track_record.md`](track_record.md).
+Python tools to fetch validated FPL data, forecast players, reconstruct a real team, and plan transfers, lineups and chips across several gameweeks. Recommendations are written to files for review; no transfers or chip activations are sent to FPL.
 
-## Why this project
+The October 2026 audit found stale current-season archive data, duplicate match records, Assistant Manager records in player training, and information leakage within double gameweeks. **The old README's backtest scores and claimed +288-point advantage are withdrawn.** A corrected internal comparison is in `README_MODEL.md`; a more complete optimizer is not evidence of predictive superiority.
 
-FPL is really **two separate problems**, and this repo treats them as swappable modules:
+## Run
 
-1. **Prediction (ML)** — how many points will each player score next gameweek?
-2. **Selection (optimization)** — given predictions, pick the best legal squad: £100.0m budget, 2 GK / 5 DEF / 5 MID / 3 FWD, max 3 per club, valid formation, captain.
-
-The optimizer (integer LP, PuLP/CBC) never changes — FPL rules are fixed. The prediction module is where all iteration happens, and every version must **beat the previous one on a held-out season** to earn its place.
-
-## Results
-
-**v0.2 (day one, cold-start features only)** — single holdout, full 2025/26 season:
-
-| prediction module | MAE (pts/match) |
-|---|---|
-| naive (last-season pts ÷ 38) | 1.357 |
-| hand-crafted heuristic v0.1 | 1.430 ❌ |
-| **ML v0.2 (gradient boosting)** | **1.283 ✅** |
-
-**v0.3 (pre-GW2: rolling form, team form from goals, walk-forward)** — retrained every 4 GWs across 2025/26, training strictly on the past. Not comparable to the v0.2 table: different features *and* a much stronger naive (rolling 5-GW mean).
-
-| model | MAE | Spearman | precision@10 | season backtest* |
-|---|---|---|---|---|
-| naive (rolling 5) | 1.051 | **0.711** | 0.087 | 1900 pts |
-| Ridge | 1.046 | 0.691 | 0.108 | — |
-| gradient boosting | 0.992 | 0.706 | 0.113 | **2188 pts** |
-| two-stage P(60+)×E(pts) | **0.911** | 0.702 | 0.113 | 2160 pts |
-
-*fresh LP squad each GW, actual points, captain doubled, oracle transfers, no auto-subs — internal comparison only.
-
-Honest findings so far:
-- The v0.1 hand-crafted heuristic **lost to the naive rule** — always benchmark before trusting intuition.
-- In v0.3 the naive rolling average is the **best ranker** (Spearman) — but ML wins where it matters: calibration (MAE), hauls (precision@10) and, decisively, **+288 pts over naive in the season backtest**.
-- Best MAE ≠ best squad: two-stage wins MAE, plain gradient boosting wins the backtest — so deployment uses the backtest winner. **We optimize the metric we deploy.**
-- precision@10 ≈ 0.11 for every model — FPL hauls are genuinely hard to predict; regression to the conditional mean means the model will never "promise" a 15-point haul.
-
-Full methodology for both versions: [`README_MODEL.md`](README_MODEL.md).
-
-## Repo layout
-
-```
-fpl_features.py       # shared: feature engineering + LP optimizer (captain in objective)
-predict_gw.py         # weekly: train on all history, predict upcoming GW, pick squad
-train_v03.py          # walk-forward evaluation + metrics + season backtest
-select_team.py        # v0.1 — heuristic baseline (kept for the record)
-train_ml.py           # v0.2 — day-one ML (kept for the record)
-fetch_data.sh         # downloads current + historical data (vaastav archive)
-predictions/          # UTC-timestamped squad outputs per GW
-data/                 # frozen snapshot of all GW1 input data (reproducibility)
-track_record.md       # live season log: model pts vs account pts, rank
-.github/workflows/    # weekly automation (Fridays 06:00 UTC + manual trigger)
-```
-
-## Reproduce
+Python 3.11+ is recommended. Optimization uses HiGHS (`highspy` for the stateful planner, SciPy for the fresh-squad benchmark) and works without the legacy CBC executable.
 
 ```bash
 pip install -r requirements.txt
-bash fetch_data.sh          # or: unzip data/data_snapshot_gw1.zip for exact GW1 state
-python train_v03.py         # walk-forward evaluation: full metrics table + backtest
-python predict_gw.py        # squad for the upcoming GW (auto-detected; --gw N to override)
+python -m unittest discover -s tests -v
+python fetch_fpl.py --workers 6
+python predict_gw.py --horizon 6 --no-squad
 ```
 
-Weekly automation: the GitHub Actions workflow re-fetches data, retrains and commits `predictions/gw{N}.csv` every Friday 06:00 UTC (or on demand via *Run workflow*).
+The forecast starts at the next official event deadline. Full-player forecasts include zero-point rows for blank gameweeks and are saved to `predictions/all_players_gwN.csv`, with metadata alongside them. All forecast gameweeks use the history available at the initial decision time. Refresh before making decisions.
 
-Data comes from the [vaastav/Fantasy-Premier-League](https://github.com/vaastav/Fantasy-Premier-League) community archive (mirror of the official FPL API) — thanks to its maintainers.
+Current data comes directly from the official FPL `bootstrap-static`, `fixtures`, and `element-summary` endpoints. Prior seasons come from the vaastav archive. The fetcher validates IDs, fields, player totals and coverage of completed fixtures; removes identical historical duplicates and Assistant Manager rows; and publishes a checksummed manifest last. Expired, missing or damaged current snapshots stop prediction rather than falling back silently.
 
-## Chip policy
+## Import your actual team
 
-The model currently plays **no chips** — a deliberate baseline, not an omission. v0.x has no multi-gameweek planning, and chips are bets on future gameweek structure. Planned order: Triple Captain and Bench Boost first (simple double-gameweek heuristics: TC on the highest-predicted DGW captain, BB when predicted bench sum clears a threshold), then Wildcard/Free Hit, which need season simulation. Until a chip module exists and is backtested, unused chips are the honest default.
+```bash
+python import_team.py --entry YOUR_ENTRY_ID --through-gw 6 \
+  --free-transfers 3 --bank 0.4
+python plan_transfers.py --state state/team_YOUR_ENTRY_ID.json \
+  --forecasts predictions/all_players_gw7.csv \
+  --output state/transfer_plan.json
+```
 
-## Roadmap
+The importer replays public transfers against every historical squad, checks bank and points, and records chip use. Money is stored as integer tenths of a million. Purchases made after GW1 use actual transfer prices. Initial GW1 purchase prices are reconstructed from season-start prices and labelled as inferred; late entrants need explicit purchase prices. Check these against the FPL Transfers screen before acting.
 
-- ✅ ~~Rolling form features (3/5/10 windows)~~ · ✅ ~~walk-forward validation~~ · ✅ ~~Spearman + precision@10~~ · ✅ ~~Ridge in the ladder~~ · ✅ ~~two-stage minutes model~~ · ✅ ~~captaincy in the LP objective~~ · ✅ ~~season backtest~~ · ✅ ~~weekly GitHub Actions~~
-- LSTM sequence model (deliberately deferred — must beat gradient boosting to ship)
-- Own xG-based opponent strength refinement; transfer module (squad continuity, max Δ-xP under 1 free transfer); chip module; hit (-4) logic
-- "Model XI pts" auto-scorer for `track_record.md`; simple dashboard
+Public picks describe the team after a historical deadline, including automatic substitutions. They do not reveal unpublished changes for the upcoming gameweek. Free transfers and any changed bank must be confirmed by the user. Account files and caches stay under ignored `state/` and `data/` paths; never commit cookies or private team state.
 
-## Disclaimer
+## What the planner handles
 
-Built for fun and to see how far a model can go in a live season. v0.1 and v0.2 were shipped under a real deadline (season started the same day) — limitations are documented, not hidden.
+- Your existing 15 players, bank, purchase/selling prices, and available free transfers.
+- Squad/club limits, legal XI, captain, proposed vice-captain and bench order.
+- Multi-gameweek permanent transfers, banked transfers up to the current limit, and four-point hits.
+- Wildcard as a permanent rebuild; Free Hit as a temporary squad with reversion.
+- Bench Boost and Triple Captain scoring, chip windows, one chip per event, and Free Hit cooldown.
+- Retention of banked free transfers when using Wildcard or Free Hit.
+- Solver status and an independent legality/budget check before returning a plan.
+
+The solver starts with a legal plan. Joint chip search is seeded by a separately optimized no-chip plan and cannot replace it with a worse result under the same decision objective. Up to 15 seconds are used for that baseline in addition to the requested joint-search limit. It may return a validated feasible plan when time expires; the JSON reports whether optimality was established within tolerance. `--seconds`, `--discount`, `--ft-value`, and `--chip-reserves` expose the planning assumptions. `--no-chips` provides a comparison without using chips.
+
+Exact same-club/position dominance reduces the candidate pool while retaining every owned player. Reduction uses every forecast gameweek, not an arbitrary top-N shortlist, and records its assumptions and witnesses in the plan.
+
+## Limits that matter
+
+The planner uses expected points and holds current prices fixed across the horizon. It does not yet simulate uncertainty, automatic substitutions, captain non-appearance, future price changes or future injury return dates. The vice-captain and bench order are recommendations; their contingency value is not included in the objective. A tiny bench term breaks scoring ties.
+
+An imported squad with a grandfathered club-limit overflow can be inspected, but the planner currently requires a legal initial club count. This does not affect the imported GW6 squad used for the current repair.
+
+To avoid consuming every chip at the end of a short horizon, default reserve values charge 25 expected points for Wildcard, 20 for Free Hit, 18 for Bench Boost and 12 for Triple Captain when the chip remains usable beyond the horizon. These are explicit, configurable **heuristics**, not learned values. Chips expiring inside the horizon have no terminal reserve. Compare sensitivity before relying on chip timing.
+
+Forecasts remain a gradient-boosting baseline with historical scoring-regime differences and limited early-season evidence. Historical feature cutoffs use the first kickoff of each event where archived deadline snapshots are unavailable; this removes within-event results but does not recreate historical injury reports, prices or all information available at the real deadline. The evaluation's fresh-squad benchmark is not a full-season transfer-policy backtest. See `README_MODEL.md`.
+
+## Files
+
+- `fpl_api.py`, `fetch_fpl.py`: resilient reads, caches, validation and snapshot manifest.
+- `fpl_features.py`, `fpl_model.py`, `predict_gw.py`: cleaned, time-safe features and forecasts.
+- `train_v03.py`: corrected model comparison and explicitly limited fresh-squad benchmark.
+- `team_state.py`, `import_team.py`: private, auditable account reconstruction.
+- `plan_transfers.py`, `planner_candidates.py`: finite-horizon transfer/chip MILP and exact candidate reduction.
+- `track_record.md`: actual account scores, separate from model results.
+- `tests/`: data, model, account and FPL-rule regressions.
+- `select_team.py`, `train_ml.py`: legacy GW1 experiments, retained for reference.
+
+GitHub Actions runs offline tests, refreshes data and publishes general player forecasts. It does not infer a user's unpublished changes or execute a personal plan.

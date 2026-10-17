@@ -1,44 +1,46 @@
-# fpl-ml — Model v0.1 (GW1 baseline)
+# Forecast and evaluation methodology
 
-Live track record starts GW1 2026/27. Squad picked 100% by the model, entered before the GW1 deadline (21 Aug 2026, 18:30 BST).
+## Audit and status
 
-## How v0.1 works
-1. **Data**: current-season player list (prices, positions, injury status) + full 2025/26 season totals from the [vaastav/Fantasy-Premier-League](https://github.com/vaastav/Fantasy-Premier-League) archive.
-2. **Scoring**: `pred = points_per_90 (24/25→25/26 season) × start_probability`, where start probability is minutes-based (`min(minutes/2700, 1)`). Low-minute players are shrunk (denominator floored at 8 games). Players flagged injured/suspended are zeroed; doubtful players scaled by the API's `chance_of_playing`.
-3. **Cold start**: new PL arrivals and promoted-club players have no PL history → flat default (1.0), so they only appear as cheap bench enablers. Known limitation, fix planned for v0.2 (league-adjusted priors).
-4. **Squad selection**: integer LP (PuLP/CBC) maximizing predicted XI points (+0.1× bench weight) under full FPL constraints: 100.0m budget, 2 GK / 5 DEF / 5 MID / 3 FWD, max 3 per club, valid XI formation. Captain = highest-predicted starter.
+The original v0.3 evaluation cannot substantiate the previously published 2188-point result or +288-point advantage. Its inputs contained identical player-fixture duplicates and Assistant Manager records, and rolling features for a second match in a double gameweek could use the result of the first match. The current-season archive also stopped at GW1 while automation continued to publish later forecasts.
 
-## Known limitations (v0.1, shipped under deadline pressure)
-- No fixture difficulty, no home/away split, no captaincy term in the objective (why no Haaland: pure value LP spreads the budget).
-- Single-season signal, no form/xG features.
-- Roadmap: v0.2 from GW2 — fixture-adjusted expected minutes + xG/xA blend, weekly automated runs (GitHub Actions).
+Historical results from the old implementation are not acceptance criteria for this repaired version. Recompute metrics after cleaning; establish a separate untouched test period before claiming an improvement.
 
-## Reproduce
-```
-pip install pandas pulp
-python select_team.py   # writes predictions_gw1.csv (UTC-timestamped)
-```
+## Data boundaries
 
----
+Current-season players, prices, availability, events, fixtures and player match histories come from the official FPL API. Completed prior-season archives supply training examples and player ID/code maps. Stable player codes link seasons; names are display fields where mappings are available. Exact duplicates are removed before aggregates or rolling calculations, conflicting duplicates fail validation, and only GK/DEF/MID/FWD records are retained.
 
-# Model v0.2 — ML (trained on day one, pre-GW1)
+Current predictions require a fresh, intact, checksummed data manifest. Finished-match histories must cover finished fixtures and agree with official player totals outside a live match. Future fixtures never update observed player or team form.
 
-**Framing**: one row = (player, match) in season *t*. Features known *before* kickoff: player aggregates from season *t-1* (pts/90, minutes, xG/90, xA/90, start share), price, position, home/away, own & opponent team strength, GW number. Target: FPL points in that match. Model: `HistGradientBoostingRegressor` (sklearn), ~57k rows from two season-pairs (23/24→24/25, 24/25→25/26). Native NaN handling = cold-start players (no PL history) are handled by the model itself, learning from price+position.
+## Features and models
 
-**Validation** (time-based holdout: train on 24/25, test on all of 25/26, 29.7k rows):
+The baseline uses previous-season aggregates, shifted recent points/minutes/xG/xA/starts, team goal form, price, position, home/away and gameweek. The incompatible static team-strength fields are excluded. Model variants include gradient boosting and a coherent two-stage appearance probability times expected points conditional on an appearance.
 
-| model | MAE (pts/match) |
-|---|---|
-| naive (last-season pts ÷ 38) | 1.357 |
-| heuristic v0.1 | 1.430 |
-| **ML v0.2** | **1.283** |
+Every fixture in an event sees one frozen historical state. Current forecasts use the official event deadline together with the current data boundary. For past seasons without archived deadlines, the earliest kickoff in the event is a documented fallback. No match from the same event contributes to that event's form features.
 
-Honest findings: (1) the hand-crafted v0.1 heuristic actually *loses to naive* — a good reminder to always benchmark; (2) ML beats naive by ~5.5% MAE — real but modest, typical for this noisy target. Squad impact: v0.2 brings Haaland in (fixture strength + price are features now); v0.1's pure value-spread left him out.
+For a forecast horizon, future event rows all use the initial observed history. Fixture-specific predictions are summed to player/gameweek totals; blank gameweeks are explicit zeros. Current availability remains an imperfect estimate of future minutes, especially over multiple events.
 
-**GW1 squad** generated by v0.2 + the same LP optimizer (see `predictions_gw1_ml.csv`, UTC-timestamped pre-deadline). Roadmap: rolling in-season form features from GW2+, captaincy term in the LP objective, weekly retrain via GitHub Actions.
+## Evaluation
 
----
+Walk-forward model fitting trains on earlier events. Ranking metrics are computed after aggregating to player/gameweek. MAE, rank correlation and top-10 accuracy measure different properties and should be inspected together.
 
-# Model v0.3 — rolling form + walk-forward (pre-GW2)
+The fresh-squad benchmark still constructs a new squad every gameweek. It is an internal forecast comparison only: it does not reproduce transfer continuity, chip decisions, selling prices or automatic substitutions. A realistic policy benchmark must replay the same state transitions as the new planner using archived information available before every deadline. That benchmark has not yet established predictive or strategic superiority.
 
-Adds everything GW1 couldn't have: player rolling form (pts r3/r5/r10, minutes r3/r5, xG/xA r5, starts r5, all shifted — no leakage), team attack/defence from actual goals (rolling 5) replacing reliance on static API strengths, captaincy inside the LP objective, and a two-stage variant P(plays 60+) × E(pts | played). Evaluation upgraded to walk-forward (retrain every 4 GWs, train strictly on the past) with ranking metrics — see README for the results table. Deployment model chosen by season backtest (points a picked squad actually scores), not by MAE.
+Changes to FPL scoring between seasons are another source of distribution shift. Simply combining historical total points does not reconstruct current-rule targets; full rescoring requires adequate raw statistics, including bonus dependencies. Missing historical information must not be invented.
+
+Recomputed on 17 October 2026 against the cleaned 2025/26 season:
+
+| Model | MAE per player/GW | Spearman | Precision@10 | Fresh-squad points |
+|---|---:|---:|---:|---:|
+| Rolling naive | 1.061 | 0.714 | 0.089 | 1841 |
+| Ridge | 1.066 | 0.695 | 0.132 | — |
+| Gradient boosting | 1.011 | 0.709 | 0.121 | 2111 |
+| Two-stage appearance model | 1.008 | 0.710 | 0.113 | 2068 |
+
+These are internal comparisons under the limitations above. The same season has informed development and model choice, so it is not a new untouched final test. The 2111-point figure is not a simulated score for a real account following legal season-long transfers. Run `python train_v03.py` after fetching the default three historical seasons to reproduce the table.
+
+## Planner assumptions
+
+The separate planner optimizes discounted expected points over the supplied horizon. It tracks permanent ownership and original acquisition prices so that selling and rebuying a player cannot repeatedly realize the original profit. Free Hit squads are temporary and priced relative to the retained squad's selling budget. Transfer-bank transitions, hits and chip effects are constrained explicitly.
+
+Terminal free-transfer and chip values are configurable assumptions. They should be calibrated on a realistic historical policy simulation and stress-tested against forecast changes. The current planner does not model stochastic automatic substitutions, vice-captain substitution, price uncertainty or return dates. Its output is a reviewable plan, not an instruction that FPL has executed.

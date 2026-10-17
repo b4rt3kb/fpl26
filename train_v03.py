@@ -1,27 +1,21 @@
-"""fpl-ml v0.3 — walk-forward evaluation + season backtest.
+"""fpl-ml v0.4 — deadline-proxy walk-forward evaluation and fresh-squad benchmark.
 
-Ladder: naive -> Ridge -> gradient boosting -> two-stage P(60+) x E(pts|played).
+Ladder: naive -> Ridge -> gradient boosting -> P(played) x E(pts|played).
 Walk-forward: retrain every 4 GWs on everything strictly before the chunk.
 Metrics: MAE, mean per-GW Spearman, mean per-GW precision@10.
 Backtest: fresh LP squad each GW (oracle transfers), actual points, captain x2.
 """
+import json
+from pathlib import Path
 import numpy as np
 import pandas as pd
-from scipy.stats import spearmanr
-from sklearn.ensemble import (HistGradientBoostingClassifier,
-                              HistGradientBoostingRegressor)
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
-from sklearn.metrics import mean_absolute_error
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from fpl_features import FEATS, POS_NAME, build_season, pick_squad, season_agg
-
-
-def hgb():
-    return HistGradientBoostingRegressor(max_iter=400, learning_rate=0.06,
-                                         max_depth=6, random_state=42)
+from fpl_model import PointsModel, ranking_metrics
 
 
 def main():
@@ -42,45 +36,39 @@ def main():
             continue
         tr = pd.concat([hist, s25[s25["gw"] < g0]], ignore_index=True)
         te = s25[chunk]
+        cutoff = te["feature_cutoff"].min()
+        tr = tr[(tr["kickoff_time"] + pd.Timedelta(hours=2) <= cutoff)
+                & tr["total_points"].notna() & tr["minutes"].notna()]
+        print(f"Fit chunk GW{g0}–{min(g0+3, 38)}; {len(tr)} completed training rows", flush=True)
 
         ridge = make_pipeline(SimpleImputer(strategy="median"),
                               StandardScaler(), Ridge(alpha=1.0))
         ridge.fit(tr[FEATS], tr["total_points"])
-        s25.loc[chunk, "p_ridge"] = ridge.predict(te[FEATS])
+        s25.loc[chunk, "p_ridge"] = ridge.predict(te[FEATS]).clip(min=0)
 
-        m1 = hgb()
-        m1.fit(tr[FEATS], tr["total_points"])
-        s25.loc[chunk, "p_hgb"] = m1.predict(te[FEATS])
-
-        clf = HistGradientBoostingClassifier(max_iter=200, random_state=42)
-        clf.fit(tr[FEATS], tr["played60"])
-        reg = hgb()
-        pl = tr[tr["played"]]
-        reg.fit(pl[FEATS], pl["total_points"])
-        s25.loc[chunk, "p_two"] = (clf.predict_proba(te[FEATS])[:, 1]
-                                   * reg.predict(te[FEATS]))
+        s25.loc[chunk, "p_hgb"] = PointsModel("hgb").fit(tr).predict(te)
+        s25.loc[chunk, "p_two"] = PointsModel("two").fit(tr).predict(te)
 
     s25["p_naive"] = s25["pts_r5"].fillna(
-        s25["prev_pts_total"] / 38).fillna(1.0)
+        s25["prev_pts_total"] / 38).fillna(1.0).clip(lower=0)
 
     def metrics(col):
-        y, p = s25["total_points"], s25[col]
-        mae = mean_absolute_error(y, p)
-        sp, prec = [], []
-        for _, g in s25.groupby("gw"):
-            if g[col].nunique() > 1:
-                sp.append(spearmanr(g[col], g["total_points"]).statistic)
-            top_p = set(g.nlargest(10, col)["key"])
-            top_a = set(g.nlargest(10, "total_points")["key"])
-            prec.append(len(top_p & top_a) / 10)
-        return mae, np.nanmean(sp), np.mean(prec)
+        values = ranking_metrics(s25, col)
+        return (values["mae_player_gw"], values["spearman_player_gw"],
+                values["precision_at_10_player_gw"])
 
-    print(f"{'model':<28}{'MAE':>7}{'Spearman':>10}{'prec@10':>9}")
+    print("Historical cutoff proxy: earliest GW kickoff, with 2h completion margin.")
+    print("Metrics aggregate each player's fixtures into gameweeks before ranking.")
+    results = {"version": "v0.4", "holdout_season": "2025-26", "metrics": {},
+               "fresh_squad_benchmark": {},
+               "limitations": "Earliest-kickoff deadline proxy, current archived prices, unlimited free squad replacement, no autosubs/chips; not a real-account season simulation."}
+    print(f"{'model':<28}{'MAE/GW':>7}{'Spearman':>10}{'prec@10':>9}")
     for name, col in [("naive (rolling 5 / prev)", "p_naive"),
                       ("Ridge", "p_ridge"),
                       ("gradient boosting", "p_hgb"),
-                      ("two-stage P(60+) x E(pts)", "p_two")]:
+                      ("P(played) x E(pts|played)", "p_two")]:
         mae, sp, pr = metrics(col)
+        results["metrics"][name] = ranking_metrics(s25, col)
         print(f"{name:<28}{mae:>7.3f}{sp:>10.3f}{pr:>9.3f}")
 
     # --- season backtest: fresh LP squad each GW, actual pts, captain x2 ---
@@ -100,8 +88,13 @@ def main():
 
     for name, col in [("naive", "p_naive"), ("gradient boosting", "p_hgb"),
                       ("two-stage", "p_two")]:
+        total = backtest(col)
+        results["fresh_squad_benchmark"][name] = float(total)
         print(f"backtest 25/26 (oracle transfers, no auto-subs) "
-              f"{name}: {backtest(col):.0f} pts")
+              f"{name}: {total:.0f} pts", flush=True)
+    output = Path("state/benchmark-v04.json")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(results, indent=2) + "\n")
 
 
 if __name__ == "__main__":

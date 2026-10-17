@@ -8,18 +8,22 @@ permissions:
 jobs:
   predict:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -v
       - run: bash fetch_data.sh
-      - run: python predict_gw.py
+      - run: python predict_gw.py --horizon 6 --no-squad
       - name: commit predictions
         run: |
           git config user.name fpl-ml
           git config user.email fpl-ml@users.noreply.github.com
           git add predictions/
-          git commit -m "auto: weekly predictions" || echo "nothing new"
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "auto: validated weekly player forecasts"
+            git push
+          fi

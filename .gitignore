@@ -6,3 +6,14 @@ teams_*.csv
 players_2627.csv
 cleaned_2526.csv
 fixtures_2627.csv
+# Downloaded snapshots and private account state
+data/cache/
+data/personal-cache/
+data/private-cache/
+data_manifest.json
+bootstrap*.json
+players_*.csv
+fixtures_*.csv
+cleaned_*.csv
+state/
+*.tmp
