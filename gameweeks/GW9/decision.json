@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-10-30T14:13:41.054318+00:00",
+  "season": "2026-27",
+  "gameweek": 9,
+  "gameweeks": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "deadline": "2026-10-31T11:00:00Z",
+  "deadline_local": "2026-10-31 12:00 CET",
+  "model": "v0.5-ensemble",
+  "forecast_generated_utc": "2026-10-30T14:12:38.155828+00:00",
+  "public_state_event": 8,
+  "public_state_fetched_utc": "2026-10-30T14:12:38.910670+00:00",
+  "transfers": [
+    {
+      "out": {
+        "id": 8,
+        "name": "Calafiori",
+        "position": "DEF",
+        "price": 5.9,
+        "selling_price": 5.7
+      },
+      "in": {
+        "id": 4,
+        "name": "Gabriel",
+        "position": "DEF",
+        "price": 7.9
+      }
+    },
+    {
+      "out": {
+        "id": 397,
+        "name": "Semenyo",
+        "position": "MID",
+        "price": 8.2,
+        "selling_price": 8.2
+      },
+      "in": {
+        "id": 427,
+        "name": "Mbeumo",
+        "position": "MID",
+        "price": 7.9
+      }
+    },
+    {
+      "out": {
+        "id": 426,
+        "name": "B.Fernandes",
+        "position": "MID",
+        "price": 11.7,
+        "selling_price": 11.7
+      },
+      "in": {
+        "id": 542,
+        "name": "E.Le Fée",
+        "position": "MID",
+        "price": 5.7
+      }
+    },
+    {
+      "out": {
+        "id": 272,
+        "name": "Kusi-Asare",
+        "position": "FWD",
+        "price": 4.4,
+        "selling_price": 4.4
+      },
+      "in": {
+        "id": 106,
+        "name": "Thiago",
+        "position": "FWD",
+        "price": 7.8
+      }
+    }
+  ],
+  "chip": null,
+  "hit_cost": 8,
+  "bank_before": 0.7,
+  "bank_after": 1.4,
+  "free_transfers_before": 2,
+  "free_transfers_next": 1,
+  "starting_xi": [
+    {
+      "id": 1,
+      "name": "Raya",
+      "position": "GK",
+      "price": 6.2
+    },
+    {
+      "id": 113,
+      "name": "F.Kadıoğlu",
+      "position": "DEF",
+      "price": 4.4
+    },
+    {
+      "id": 4,
+      "name": "Gabriel",
+      "position": "DEF",
+      "price": 7.9
+    },
+    {
+      "id": 112,
+      "name": "Van Hecke",
+      "position": "DEF",
+      "price": 4.9
+    },
+    {
+      "id": 481,
+      "name": "Anderson",
+      "position": "MID",
+      "price": 6.3
+    },
+    {
+      "id": 542,
+      "name": "E.Le Fée",
+      "position": "MID",
+      "price": 5.7
+    },
+    {
+      "id": 427,
+      "name": "Mbeumo",
+      "position": "MID",
+      "price": 7.9
+    },
+    {
+      "id": 40,
+      "name": "Rogers",
+      "position": "MID",
+      "price": 8.0
+    },
+    {
+      "id": 210,
+      "name": "Wharton",
+      "position": "MID",
+      "price": 5.4
+    },
+    {
+      "id": 411,
+      "name": "Haaland",
+      "position": "FWD",
+      "price": 15.8
+    },
+    {
+      "id": 106,
+      "name": "Thiago",
+      "position": "FWD",
+      "price": 7.8
+    }
+  ],
+  "captain": {
+    "id": 411,
+    "name": "Haaland",
+    "position": "FWD",
+    "price": 15.8
+  },
+  "vice_captain": {
+    "id": 106,
+    "name": "Thiago",
+    "position": "FWD",
+    "price": 7.8
+  },
+  "bench": [
+    {
+      "id": 250,
+      "name": "Leno",
+      "position": "GK",
+      "price": 4.5,
+      "order": 0
+    },
+    {
+      "id": 469,
+      "name": "N.Williams",
+      "position": "DEF",
+      "price": 5.0,
+      "order": 1
+    },
+    {
+      "id": 115,
+      "name": "De Cuyper",
+      "position": "DEF",
+      "price": 5.3,
+      "order": 2
+    },
+    {
+      "id": 321,
+      "name": "Walle Egeli",
+      "position": "FWD",
+      "price": 4.5,
+      "order": 3
+    }
+  ],
+  "expected_net_points": 48.6
+}
